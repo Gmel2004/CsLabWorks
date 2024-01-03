@@ -1,0 +1,87 @@
+<mxfile host="Electron" modified="2023-09-13T13:24:47.206Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/21.6.8 Chrome/114.0.5735.289 Electron/25.5.0 Safari/537.36" etag="N13l2pMJLOyc3CW8OV3_" version="21.6.8" type="device">
+  <diagram name="Страница — 1" id="voTAqQn-UCql8z_2dohZ">
+    <mxGraphModel dx="1276" dy="606" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="5ofvPI_tCL2GcUpP6zsP-5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" parent="1" source="5ofvPI_tCL2GcUpP6zsP-1" target="5ofvPI_tCL2GcUpP6zsP-2" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="5ofvPI_tCL2GcUpP6zsP-1" value="public static void Main() {" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="329" y="10" width="170" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="5ofvPI_tCL2GcUpP6zsP-7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="5ofvPI_tCL2GcUpP6zsP-2" target="5ofvPI_tCL2GcUpP6zsP-6" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="5ofvPI_tCL2GcUpP6zsP-2" value="var x = 0;" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="379" y="60" width="70" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="5ofvPI_tCL2GcUpP6zsP-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" parent="1" source="5ofvPI_tCL2GcUpP6zsP-1" target="5ofvPI_tCL2GcUpP6zsP-1" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="5ofvPI_tCL2GcUpP6zsP-4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" parent="1" source="5ofvPI_tCL2GcUpP6zsP-1" target="5ofvPI_tCL2GcUpP6zsP-1" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="5ofvPI_tCL2GcUpP6zsP-9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="5ofvPI_tCL2GcUpP6zsP-6" target="5ofvPI_tCL2GcUpP6zsP-8" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="5ofvPI_tCL2GcUpP6zsP-6" value="var y = 0;" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="379" y="100" width="70" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="5ofvPI_tCL2GcUpP6zsP-11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="5ofvPI_tCL2GcUpP6zsP-8" target="5ofvPI_tCL2GcUpP6zsP-15" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="250" y="230" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="5ofvPI_tCL2GcUpP6zsP-12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" parent="1" source="5ofvPI_tCL2GcUpP6zsP-8" target="5ofvPI_tCL2GcUpP6zsP-16" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="570" y="230" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="5ofvPI_tCL2GcUpP6zsP-8" value="if (BelongsToArea(x, y))" style="rhombus;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="334" y="140" width="160" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="5ofvPI_tCL2GcUpP6zsP-13" value="1" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+          <mxGeometry x="275" y="148" width="30" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="5ofvPI_tCL2GcUpP6zsP-14" value="0" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+          <mxGeometry x="515" y="148" width="30" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="5ofvPI_tCL2GcUpP6zsP-17" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" parent="1" source="5ofvPI_tCL2GcUpP6zsP-15" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="410" y="340" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="5ofvPI_tCL2GcUpP6zsP-15" value="Console.WriteLine($&quot;Точка ({x}, {y}) принадлежит заштрихованной области&quot;);" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;" parent="1" vertex="1">
+          <mxGeometry x="130" y="230" width="230" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="5ofvPI_tCL2GcUpP6zsP-18" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;" parent="1" source="5ofvPI_tCL2GcUpP6zsP-16" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="410" y="340" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="5ofvPI_tCL2GcUpP6zsP-16" value="Console.WriteLine($&quot;Точка ({x}, {y}) не принадлежит заштрихованной области&quot;);" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;" parent="1" vertex="1">
+          <mxGeometry x="440" y="230" width="270" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="5ofvPI_tCL2GcUpP6zsP-19" value="конец;&lt;br&gt;}" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="350" y="340" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="5ofvPI_tCL2GcUpP6zsP-23" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="5ofvPI_tCL2GcUpP6zsP-20" target="5ofvPI_tCL2GcUpP6zsP-21" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="5ofvPI_tCL2GcUpP6zsP-20" value="public static bool BelongsToArea(float x, float y) {" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="255" y="420" width="310" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="5ofvPI_tCL2GcUpP6zsP-24" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="5ofvPI_tCL2GcUpP6zsP-21" target="5ofvPI_tCL2GcUpP6zsP-22" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="5ofvPI_tCL2GcUpP6zsP-21" value="var isBelongs = x * x + y * y &amp;lt;= 1 &amp;amp;&amp;amp; x * y &amp;lt;= 0;" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="280" y="490" width="260" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="5ofvPI_tCL2GcUpP6zsP-22" value="&lt;div&gt;return isBelongs;&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; }&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="350" y="565" width="120" height="40" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

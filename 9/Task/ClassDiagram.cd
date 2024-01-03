@@ -1,0 +1,38 @@
+<<<<<<< HEAD
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="FullSignature">
+  <Class Name="Task.Money">
+    <Position X="3" Y="0.5" Width="3.25" />
+    <TypeIdentifier>
+      <HashCode>CAQBgAAAAQgAAAAERAEAIABAAAAAQAIQAAAAEAAAQAA=</HashCode>
+      <FileName>Money.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Task.MoneyArray">
+    <Position X="7" Y="0.5" Width="3.5" />
+    <TypeIdentifier>
+      <HashCode>gAAAAAAAAAAAAAAACAgAAIAAAgAAAAAAAAAAAAEAAAA=</HashCode>
+      <FileName>MoneyArray.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+=======
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="FullSignature">
+  <Class Name="Task.Money">
+    <Position X="3" Y="0.5" Width="3.25" />
+    <TypeIdentifier>
+      <HashCode>CAQBgAAAAQgAAAAERAEAIABAAAAAQAIQAAAAEAAAQAA=</HashCode>
+      <FileName>Money.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Task.MoneyArray">
+    <Position X="7" Y="0.5" Width="3.5" />
+    <TypeIdentifier>
+      <HashCode>gAAAAAAAAAAAAAAACAgAAIAAAgAAAAAAAAAAAAEAAAA=</HashCode>
+      <FileName>MoneyArray.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+>>>>>>> 5ddec8720a38e80661f046408dad51697be8c248
+</ClassDiagram>
