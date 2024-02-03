@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 
 namespace _12
 {
@@ -211,6 +212,8 @@ namespace _12
             public Node? Right { get; set; }
             #endregion
 
+            public Node() : this(default!) { }
+
             public Node(T value) => Value = value;
 
             public Node DeepClone(int count)
@@ -229,45 +232,22 @@ namespace _12
 
         public struct Enumerator : IEnumerator<T>
         {
-            private readonly MySortedSet<T> tree;
-            private readonly Stack<Node> stack;
-            private Node? current;
+            private Queue<Node> queue;
 
             public Enumerator(MySortedSet<T> set)
             {
-                tree = set;
-                stack = new Stack<Node>(2 * (int)Math.Log2(set.Count() + 1));
-                current = null;
+                queue = new(set.count);
+                Current = null;
 
-                Initialize();
+                Initialize(set);
             }
 
             #region IEnumerator<T> members
-            public bool MoveNext()
-            {
-                if (stack.Count == 0)
-                {
-                    current = null;
-                    return false;
-                }
+            public bool MoveNext() => queue.TryDequeue(out Current);
 
-                //Симметричный обход
-                return true;
-            }
+            public readonly void Dispose() { }
 
-            public void Dispose() { }//!!!
-
-            public T Current
-            {
-                get
-                {
-                    if (current != null)
-                    {
-                        return current.Value;
-                    }
-                    return default!;
-                }
-            }
+            public T Current { get; private set; }
 
             readonly object? IEnumerator.Current
             {
@@ -281,12 +261,12 @@ namespace _12
 
             public void Reset()
             {
-                stack.Clear();
-                Initialize();
+                queue.Clear();
+                //Initialize(MySortedSet <T> set);
             }
             #endregion
 
-            private void Initialize()
+            private void Initialize(MySortedSet<T> set)
             {
                 //Симметричный обход
             }
