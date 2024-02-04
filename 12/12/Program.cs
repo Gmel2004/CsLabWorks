@@ -1,12 +1,24 @@
-﻿namespace _12
+﻿using Task;
+
+namespace _12
 {
     internal class Program
     {
         static void Main(string[] args)
         {
-            MySortedSet<string> s = new();
-            string[] s2= new string[5];
-            s.CopyTo(s2, 5);
+            //SortedSet<string> set = new SortedSet<string>();
+            MySortedSet<Animal> Animals = new()
+            {
+                new Bird(), new Mammal(), new Artiodactyl(), new Animal()
+            };
+
+            foreach (var item in Animals)
+            {
+                item.InitRandom();
+                Console.WriteLine(item.ToString());
+            }
+
+            //Animals.FindNode
         }
     }
 }

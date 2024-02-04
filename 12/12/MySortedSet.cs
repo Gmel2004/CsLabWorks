@@ -3,23 +3,31 @@
 namespace _12
 {
     public class MySortedSet<T> :
-        IEnumerable<T>, ICollection<T>
+        ICollection<T>//{ IEnumerable<T>, IEnumerable }
     {
         private Node? root;
-        private readonly IComparer<T> comparer = default!;
         private int count;
 
-        public IComparer<T> Comparer => comparer;
+        public IComparer<T> Comparer { get; set; }
 
-        #region Constructors
-        public MySortedSet() => comparer = Comparer<T>.Default;
+        public MySortedSet(IEnumerable<T>? collection = null, IComparer<T>? comparer = null)
+        {
+            Comparer = comparer ?? Comparer<T>.Default;
 
-        public MySortedSet(IComparer<T>? comparer) => this.comparer = comparer ?? Comparer<T>.Default;
-        #endregion
+            if (collection != null)
+            {
+                var enumerator = collection.GetEnumerator();
+
+                do
+                {
+                    Add(enumerator.Current);
+                } while (enumerator.MoveNext());
+            }
+        }
 
         #region IEnumerable<T> members
 
-        public Enumerator GetEnumerator() => new Enumerator(this);
+        public Enumerator GetEnumerator() => new(this);
 
         IEnumerator<T> IEnumerable<T>.GetEnumerator() => GetEnumerator();
 
@@ -40,17 +48,52 @@ namespace _12
                 count = 1;
                 return;
             }
-            //
+
+            var current = root;
+            while (Comparer.Compare(value, current!.Value) != 0)
+            {
+                var order = Comparer.Compare(value, current!.Value);
+                if (order == 0 || (order == 1 && current.Right == null))
+                {
+                    current.Right = new(value) { Right = current.Right! };
+                    count++;
+                }
+                else if (order == -1 && current.Left == null)
+                {
+                    current.Left = new(value);
+                    count++;
+                }
+
+                current = order < 0 ? current.Left : current.Right;
+            }
+            PerformBalance();
         }
 
         public bool Remove(T value)
         {
-            if (root == null)
+            var parent = FindPossibleParent(value);
+
+            if (parent == null)
             {
                 return false;
             }
 
-            //
+            //What to do?
+            //Delete with Balance by conditions OR:
+            if (Comparer.Compare(value, parent.Value) < 0)
+            {
+                var left = parent.Left!.Left!;
+                parent.Left = parent.Left!.Right!;
+                parent.Left.Left = left;
+            }
+            else
+            {
+                var right = parent.Right!.Right!;
+                parent.Right = parent.Right!.Left!;
+                parent.Right.Right = right;
+            }
+            PerformBalance();
+
             return true;
         }
 
@@ -58,7 +101,6 @@ namespace _12
         {
             root = null;
             count = 0;
-            //
         }
 
         public bool Contains(T value) => FindNode(value) != null;
@@ -133,143 +175,103 @@ namespace _12
         #endregion
 
         #region Tree-specific operations
-        private void InsertionBalance(Node current, ref Node parent, Node grandParent, Node greatGrandParent)
+        private void PerformBalance()
         {
             //
+        }
+
+        private Node? FindPossibleParent(T value)
+        {
+            if (root == null) return null;
+
+            var current = root;
+            var order = Comparer.Compare(value, current.Value);
+
+            while (!(order > 0 &&
+                    (current.Right == null
+                    || Comparer.Compare(value, current.Right.Value) < 0)
+                    || current.Left == null
+                    || Comparer.Compare(value, current.Left.Value) > 0))
+            {
+                current = order < 0 ? current.Left : current.Right;
+                order = Comparer.Compare(value, current!.Value);
+            }
+
+            return current;
         }
 
         public Node? FindNode(T value)
         {
             Node? current = root;
-            while (current != null)
-            {
-                int order = comparer.Compare(value, current.Value);
-                if (order == 0)
-                {
-                    return current;
-                }
+            var order = -1;
 
+            while (current != null && order != 0)
+            {
+                order = Comparer.Compare(value, current.Value);
                 current = order < 0 ? current.Left : current.Right;
             }
 
-            return null;
+            return current;
         }
 
-        public static bool SortedSetEquals(MySortedSet<T>? set1, MySortedSet<T>? set2, IComparer<T> comparer)
+        public override bool Equals(object? obj)
         {
-            if (set1 == null)
-            {
-                return set2 == null;
-            }
-
-            if (set2 == null)
-            {
-                return false;
-            }
-
-            if (set1.HasEqualComparer(set2))
-            {
-                return set1.Count == set2.Count;// && set1.SetEquals(set2);
-            }
-
-            bool found;
-            foreach (T value1 in set1)
-            {
-                found = false;
-                foreach (T value2 in set2)
-                {
-                    if (comparer.Compare(value1, value2) == 0)
-                    {
-                        found = true;
-                        break;
-                    }
-                }
-                if (!found)
-                {
-                    return false;
-                }
-            }
-
-            return true;
+            return obj is MySortedSet<T> set
+                && HasEqualComparer(set)
+                && this
+                .Zip(set, (first, second) =>
+                Comparer.Compare(first, second) == 0)
+                .All(t => t == true);
         }
 
-        private bool HasEqualComparer(MySortedSet<T> other)
-        {
-            return Comparer == other.Comparer || Comparer.Equals(other.Comparer);
-        }
+        private bool HasEqualComparer(MySortedSet<T> set) => Comparer == set.Comparer;
 
         #endregion
 
         #region Helper Classes
-        public sealed class Node
+        public sealed class Node(T value)
         {
-            #region Properties
-            public T Value { get; set; }
+            public T Value { get; set; } = value;
 
             public Node? Left { get; set; }
 
             public Node? Right { get; set; }
-            #endregion
 
-            public Node(T value) => Value = value;
-
-            public Node DeepClone(int count)
-            {
-                Node newRoot = ShallowClone();
-
-                //Обход
-
-                return newRoot;
-            }
-
-            public Node ShallowClone() => new(Value);
-
-            private int GetCount() => 1 + (Left?.GetCount() ?? 0) + (Right?.GetCount() ?? 0);
+            private int Height => 1 + (Left?.Height ?? 0) + (Right?.Height ?? 0);
         }
 
         public struct Enumerator : IEnumerator<T>
         {
-            private readonly MySortedSet<T> tree;
-            private readonly Stack<Node> stack;
+            private Queue<Node> queue;
             private Node? current;
 
             public Enumerator(MySortedSet<T> set)
             {
-                tree = set;
-                stack = new Stack<Node>(2 * (int)Math.Log2(set.Count() + 1));
+                queue = new(set.Count);
                 current = null;
 
-                Initialize();
+                FillQueue(set.root!);
+            }
+
+            private void FillQueue(Node current)
+            {
+                if (current.Left != null) FillQueue(current.Left);
+                queue.Enqueue(current);
+                if (current.Right != null) FillQueue(current.Right);
             }
 
             #region IEnumerator<T> members
             public bool MoveNext()
             {
-                if (stack.Count == 0)
-                {
-                    current = null;
-                    return false;
-                }
+                if (queue.TryDequeue(out current)) return true;
 
-                //Симметричный обход
-                return true;
+                current = null;
+                return false;
             }
 
-            public void Dispose() { }//!!!
+            public readonly void Dispose() {}
 
             public T Current
-            {
-                get
-                {
-                    if (current != null)
-                    {
-                        return current.Value;
-                    }
-                    return default!;
-                }
-            }
-
-            readonly object? IEnumerator.Current
             {
                 get
                 {
@@ -279,19 +281,14 @@ namespace _12
                 }
             }
 
+             object? IEnumerator.Current => Current;
+
             public void Reset()
             {
-                stack.Clear();
-                Initialize();
+                queue.Clear();
+                current = null;
             }
             #endregion
-
-            private void Initialize()
-            {
-                //Симметричный обход
-            }
-
-            public readonly bool NotStartedOrEnded => current == null;
         }
         #endregion
     }

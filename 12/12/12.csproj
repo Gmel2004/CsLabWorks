@@ -9,6 +9,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="..\.editorconfig" Link=".editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="Task">
       <HintPath>..\..\10\Task\Task\bin\Release\net6.0\Task.dll</HintPath>
     </Reference>
