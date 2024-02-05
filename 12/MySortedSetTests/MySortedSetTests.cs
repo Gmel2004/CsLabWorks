@@ -3,6 +3,8 @@ namespace _12
     [TestClass]
     public class MySortedSetTests
     {
+        #region Basic Operations
+
         [TestMethod]
         public void AddElementsToSortedSet()
         {
@@ -53,6 +55,36 @@ namespace _12
         }
 
         [TestMethod]
+        public void CopyToFullArray()
+        {
+            MySortedSet<int> set = new MySortedSet<int> { 3, 1, 5 };
+            int[] array = new int[3];
+            set.CopyTo(array, 0);
+
+            Assert.IsTrue(array.SequenceEqual(new[] { 1, 3, 5 }));
+        }
+
+        [TestMethod]
+        public void CopyToPartialArray()
+        {
+            MySortedSet<int> set = new MySortedSet<int> { 3, 1, 5 };
+            int[] array = new int[5] { 0, 0, 0, 0, 0 };
+            set.CopyTo(array, 1);
+
+            Assert.IsTrue(array.SequenceEqual(new[] { 0, 1, 3, 5, 0 }));
+        }
+
+        [TestMethod]
+        public void CopyToWithStartIndex()
+        {
+            MySortedSet<int> set = new MySortedSet<int> { 3, 1, 5 };
+            int[] array = new int[5];
+            set.CopyTo(array, 2);
+
+            Assert.IsTrue(array.SequenceEqual(new[] { 0, 0, 1, 3, 5 }));
+        }
+
+        [TestMethod]
         public void Enumeration()
         {
             MySortedSet<int> set = new MySortedSet<int> { 3, 1, 5 };
@@ -66,7 +98,108 @@ namespace _12
             MySortedSet<int> set1 = new MySortedSet<int> { 3, 1, 5 };
             MySortedSet<int> set2 = new MySortedSet<int> { 1, 3, 5 };
 
-            Assert.IsTrue(set1.Equals(set2));
+            Assert.AreEqual(set1, set2);
         }
+
+        #endregion
+
+        #region String Operations
+
+        [TestMethod]
+        public void AddStringElementsToSortedSet()
+        {
+            MySortedSet<string> set = new MySortedSet<string>();
+            set.Add("apple");
+            set.Add("banana");
+            set.Add("orange");
+
+            Assert.IsTrue(set.SequenceEqual(new[] { "apple", "banana", "orange" }));
+        }
+
+        [TestMethod]
+        public void RemoveStringElementFromSortedSet()
+        {
+            MySortedSet<string> set = new MySortedSet<string> { "apple", "banana", "orange" };
+            set.Remove("banana");
+
+            Assert.IsTrue(set.SequenceEqual(new[] { "apple", "orange" }));
+        }
+
+        [TestMethod]
+        public void ClearStringSortedSet()
+        {
+            MySortedSet<string> set = new MySortedSet<string> { "apple", "banana", "orange" };
+            set.Clear();
+
+            Assert.AreEqual(0, set.Count);
+            Assert.IsTrue(set.SequenceEqual(Enumerable.Empty<string>()));
+        }
+
+        [TestMethod]
+        public void ContainsStringElementInSortedSet()
+        {
+            MySortedSet<string> set = new MySortedSet<string> { "apple", "banana", "orange" };
+
+            Assert.IsTrue(set.Contains("banana"));
+            Assert.IsFalse(set.Contains("grape"));
+        }
+
+        [TestMethod]
+        public void CopyToStringArray()
+        {
+            MySortedSet<string> set = new MySortedSet<string> { "apple", "banana", "orange" };
+            string[] array = new string[3];
+            set.CopyTo(array, 0);
+
+            Assert.IsTrue(array.SequenceEqual(new[] { "apple", "banana", "orange" }));
+        }
+
+        [TestMethod]
+        public void EnumerationOfStringSet()
+        {
+            MySortedSet<string> set = new MySortedSet<string> { "apple", "banana", "orange" };
+
+            Assert.IsTrue(set.SequenceEqual(new[] { "apple", "banana", "orange" }));
+        }
+
+        #endregion
+
+        #region Constructor Operations
+
+        [TestMethod]
+        public void DefaultConstructor()
+        {
+            MySortedSet<int> set = new MySortedSet<int>();
+            Assert.AreEqual(0, set.Count);
+            Assert.IsTrue(set.SequenceEqual(Enumerable.Empty<int>()));
+        }
+
+        [TestMethod]
+        public void ComparerConstructor()
+        {
+            MySortedSet<int> set = new MySortedSet<int>(Comparer<int>.Default);
+            Assert.AreEqual(0, set.Count);
+            Assert.IsTrue(set.SequenceEqual(Enumerable.Empty<int>()));
+        }
+
+        [TestMethod]
+        public void CollectionConstructor()
+        {
+            MySortedSet<int> sourceSet = new MySortedSet<int> { 3, 1, 5 };
+            MySortedSet<int> set = new MySortedSet<int>(sourceSet);
+            Assert.AreEqual(3, set.Count);
+            Assert.IsTrue(set.SequenceEqual(new[] { 1, 3, 5 }));
+        }
+
+        [TestMethod]
+        public void CollectionAndComparerConstructor()
+        {
+            MySortedSet<int> sourceSet = new MySortedSet<int> { 3, 1, 5 };
+            MySortedSet<int> set = new MySortedSet<int>(sourceSet, Comparer<int>.Default);
+            Assert.AreEqual(3, set.Count);
+            Assert.IsTrue(set.SequenceEqual(new[] { 1, 3, 5 }));
+        }
+
+        #endregion
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 
 namespace _12
 {
@@ -49,38 +48,31 @@ namespace _12
 
         public bool Remove(T value)
         {
-            if (value == null || root == null) return false;
+            Node? parent = null;
+            Node? current = root;
 
-            if (comparer.Compare(value, root.Value) == 0) return true;//What to do?
-
-            var parent = root;
-
-            while (parent != null)
+            while (current != null)
             {
-                var next = comparer.Compare(value, parent.Value) < 0 ? parent.Left : parent.Right;
-                if (next != null && comparer.Compare(value, next.Value) == 0) break;
-                parent = next;
+                int order = comparer.Compare(value, current.Value);
+                if (order == 0)
+                {
+                    Node? node = current.Left ?? current.Right;
+                    if (parent == null)
+                        root = node;
+                    else if (comparer.Compare(value, parent.Value) < 0)
+                        parent.Left = node;
+                    else
+                        parent.Right = node;
+
+                    PerformBalance(root);
+                    return true;
+                }
+
+                parent = current;
+                current = order < 0 ? current.Left : current.Right;
             }
 
-            if (parent == null) return false;
-
-            if (comparer.Compare(value, parent!.Value) < 0)
-            {
-                var left = parent.Left!.Left!;
-                parent.Left = parent.Left!.Right!;
-                if (parent.Left != null) parent.Left.Left = left;
-                else parent.Left = left;
-            }
-            else
-            {
-                var right = parent.Right!.Right!;
-                parent.Right = parent.Right!.Left!;
-                if (parent.Right != null) parent.Right.Right = right;
-                else parent.Right = right;
-            }
-            //PerformBalance(root!);
-
-            return true;
+            return false;
         }
 
         public void Clear()
@@ -144,7 +136,7 @@ namespace _12
 
                 current = order < 0 ? current.Left : current.Right;
             }
-            //PerformBalance(root);
+            PerformBalance(root);
         }
 
         private void PerformBalance(Node? node)
@@ -152,28 +144,35 @@ namespace _12
             if (node == null) return;
 
             PerformBalance(node.Left);
-
-            var current = node;
-            while (current != null)
-            {
-                if (current.BalanceRatio == 2)
-                {
-                    if (current!.Right!.BalanceRatio < 0) Rotate(current.Right);
-                    Rotate(current);
-                }
-                else if (current.BalanceRatio == -2)
-                {
-                    if (current!.Left!.BalanceRatio > 0) Rotate(current.Left);
-                    Rotate(current);
-                }
-            }
-
             PerformBalance(node.Right);
+
+            if (node.BalanceRatio == 2)
+            {
+                if (node.Right != null && node.Right.BalanceRatio < 0) Rotate(node.Right, false);
+                Rotate(node, true);
+            }
+            else if (node.BalanceRatio == -2)
+            {
+                if (node.Left != null && node.Left.BalanceRatio > 0) Rotate(node.Left, true);
+                Rotate(node, false);
+            }
         }
 
-        private void Rotate(Node node)
+        private void Rotate(Node node, bool isLeft)
         {
-            //
+            Node parent = isLeft ? node.Right! : node.Left!;
+            if (isLeft)
+            {
+                node.Right = parent.Left;
+                parent.Left = node;
+            }
+            else
+            {
+                node.Left = parent.Right;
+                parent.Right = node;
+            }
+            if (node == root) root = parent;
+
         }
 
         public Node? FindNode(T value)
@@ -198,10 +197,7 @@ namespace _12
             return obj is MySortedSet<T> set
                 && comparer.Equals(set.comparer)
                 && Count == set.Count
-                && this
-                .Zip(set, (first, second) =>
-                comparer.Compare(first, second) == 0)
-                .All(t => t);
+                && this.SequenceEqual(set);
         }
         #endregion
 
