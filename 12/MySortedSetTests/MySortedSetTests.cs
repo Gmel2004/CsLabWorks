@@ -1,19 +1,20 @@
-namespace _12
+using _12;
+
+namespace MyNamespace.Tests
 {
     [TestClass]
     public class MySortedSetTests
     {
-        #region Basic Operations
-
         [TestMethod]
         public void AddElementsToSortedSet()
         {
             MySortedSet<int> set = new MySortedSet<int>();
-            set.Add(3);
-            set.Add(1);
-            set.Add(5);
+            for (int i = 0; i < 10; i++)
+            {
+                set.Add(i);
+            }
 
-            Assert.IsTrue(set.SequenceEqual(new[] { 1, 3, 5 }));
+            CollectionAssert.AreEqual(Enumerable.Range(0, 10).ToArray(), set.ToArray());
         }
 
         [TestMethod]
@@ -22,7 +23,7 @@ namespace _12
             MySortedSet<int> set = new MySortedSet<int> { 3, 1, 5 };
             set.Remove(3);
 
-            Assert.IsTrue(set.SequenceEqual(new[] { 1, 5 }));
+            CollectionAssert.AreEqual(new[] { 1, 5 }, set.ToArray());
         }
 
         [TestMethod]
@@ -32,7 +33,7 @@ namespace _12
             set.Clear();
 
             Assert.AreEqual(0, set.Count);
-            Assert.IsTrue(set.SequenceEqual(Enumerable.Empty<int>()));
+            CollectionAssert.AreEqual(Enumerable.Empty<int>().ToArray(), set.ToArray());
         }
 
         [TestMethod]
@@ -51,7 +52,7 @@ namespace _12
             int[] array = new int[3];
             set.CopyTo(array, 0);
 
-            Assert.IsTrue(array.SequenceEqual(new[] { 1, 3, 5 }));
+            CollectionAssert.AreEqual(new[] { 1, 3, 5 }, array);
         }
 
         [TestMethod]
@@ -61,7 +62,7 @@ namespace _12
             int[] array = new int[3];
             set.CopyTo(array, 0);
 
-            Assert.IsTrue(array.SequenceEqual(new[] { 1, 3, 5 }));
+            CollectionAssert.AreEqual(new[] { 1, 3, 5 }, array);
         }
 
         [TestMethod]
@@ -71,7 +72,7 @@ namespace _12
             int[] array = new int[5] { 0, 0, 0, 0, 0 };
             set.CopyTo(array, 1);
 
-            Assert.IsTrue(array.SequenceEqual(new[] { 0, 1, 3, 5, 0 }));
+            CollectionAssert.AreEqual(new[] { 0, 1, 3, 5, 0 }, array);
         }
 
         [TestMethod]
@@ -81,7 +82,7 @@ namespace _12
             int[] array = new int[5];
             set.CopyTo(array, 2);
 
-            Assert.IsTrue(array.SequenceEqual(new[] { 0, 0, 1, 3, 5 }));
+            CollectionAssert.AreEqual(new[] { 0, 0, 1, 3, 5 }, array);
         }
 
         [TestMethod]
@@ -89,7 +90,7 @@ namespace _12
         {
             MySortedSet<int> set = new MySortedSet<int> { 3, 1, 5 };
 
-            Assert.IsTrue(set.SequenceEqual(new[] { 1, 3, 5 }));
+            CollectionAssert.AreEqual(new[] { 1, 3, 5 }, set.ToArray());
         }
 
         [TestMethod]
@@ -101,10 +102,6 @@ namespace _12
             Assert.AreEqual(set1, set2);
         }
 
-        #endregion
-
-        #region String Operations
-
         [TestMethod]
         public void AddStringElementsToSortedSet()
         {
@@ -113,7 +110,7 @@ namespace _12
             set.Add("banana");
             set.Add("orange");
 
-            Assert.IsTrue(set.SequenceEqual(new[] { "apple", "banana", "orange" }));
+            CollectionAssert.AreEqual(new[] { "apple", "banana", "orange" }, set.ToArray());
         }
 
         [TestMethod]
@@ -122,7 +119,7 @@ namespace _12
             MySortedSet<string> set = new MySortedSet<string> { "apple", "banana", "orange" };
             set.Remove("banana");
 
-            Assert.IsTrue(set.SequenceEqual(new[] { "apple", "orange" }));
+            CollectionAssert.AreEqual(new[] { "apple", "orange" }, set.ToArray());
         }
 
         [TestMethod]
@@ -132,7 +129,7 @@ namespace _12
             set.Clear();
 
             Assert.AreEqual(0, set.Count);
-            Assert.IsTrue(set.SequenceEqual(Enumerable.Empty<string>()));
+            CollectionAssert.AreEqual(Enumerable.Empty<string>().ToArray(), set.ToArray());
         }
 
         [TestMethod]
@@ -151,7 +148,7 @@ namespace _12
             string[] array = new string[3];
             set.CopyTo(array, 0);
 
-            Assert.IsTrue(array.SequenceEqual(new[] { "apple", "banana", "orange" }));
+            CollectionAssert.AreEqual(new[] { "apple", "banana", "orange" }, array);
         }
 
         [TestMethod]
@@ -159,19 +156,15 @@ namespace _12
         {
             MySortedSet<string> set = new MySortedSet<string> { "apple", "banana", "orange" };
 
-            Assert.IsTrue(set.SequenceEqual(new[] { "apple", "banana", "orange" }));
+            CollectionAssert.AreEqual(new[] { "apple", "banana", "orange" }, set.ToArray());
         }
-
-        #endregion
-
-        #region Constructor Operations
 
         [TestMethod]
         public void DefaultConstructor()
         {
             MySortedSet<int> set = new MySortedSet<int>();
             Assert.AreEqual(0, set.Count);
-            Assert.IsTrue(set.SequenceEqual(Enumerable.Empty<int>()));
+            CollectionAssert.AreEqual(Enumerable.Empty<int>().ToArray(), set.ToArray());
         }
 
         [TestMethod]
@@ -179,7 +172,7 @@ namespace _12
         {
             MySortedSet<int> set = new MySortedSet<int>(Comparer<int>.Default);
             Assert.AreEqual(0, set.Count);
-            Assert.IsTrue(set.SequenceEqual(Enumerable.Empty<int>()));
+            CollectionAssert.AreEqual(Enumerable.Empty<int>().ToArray(), set.ToArray());
         }
 
         [TestMethod]
@@ -188,7 +181,7 @@ namespace _12
             MySortedSet<int> sourceSet = new MySortedSet<int> { 3, 1, 5 };
             MySortedSet<int> set = new MySortedSet<int>(sourceSet);
             Assert.AreEqual(3, set.Count);
-            Assert.IsTrue(set.SequenceEqual(new[] { 1, 3, 5 }));
+            CollectionAssert.AreEqual(new[] { 1, 3, 5 }, set.ToArray());
         }
 
         [TestMethod]
@@ -197,9 +190,7 @@ namespace _12
             MySortedSet<int> sourceSet = new MySortedSet<int> { 3, 1, 5 };
             MySortedSet<int> set = new MySortedSet<int>(sourceSet, Comparer<int>.Default);
             Assert.AreEqual(3, set.Count);
-            Assert.IsTrue(set.SequenceEqual(new[] { 1, 3, 5 }));
+            CollectionAssert.AreEqual(new[] { 1, 3, 5 }, set.ToArray());
         }
-
-        #endregion
     }
 }

@@ -61,35 +61,28 @@ namespace _12
 
         public bool IsReadOnly => false;
 
-        public void Add(T value) => AddIfNotPresent(value);
+        public void Add(T value)
+        {
+            ArgumentNullException.ThrowIfNull(value, nameof(value));
+
+            if (root == null)
+            {
+                root = new Node(value);
+                count = 1;
+                return;
+            }
+
+            AddIfNotPresent(root, value);
+        }
 
         public bool Remove(T value)
         {
-            Node? parent = null;
-            Node? current = root;
+            Node node = FindNode(value)!;
+            if (node == null) return false;
 
-            while (current != null)
-            {
-                int order = comparer.Compare(value, current.Value);
-                if (order == 0)
-                {
-                    Node? node = current.Left ?? current.Right;
-                    if (parent == null)
-                        root = node;
-                    else if (comparer.Compare(value, parent.Value) < 0)
-                        parent.Left = node;
-                    else
-                        parent.Right = node;
-
-                    PerformBalance(root);
-                    return true;
-                }
-
-                parent = current;
-                current = order < 0 ? current.Left : current.Right;
-            }
-
-            return false;
+            count--;
+            RemoveNode(node);
+            return true;
         }
 
         public void Clear()
@@ -119,77 +112,123 @@ namespace _12
         #endregion
 
         #region Specific operations
-        private void AddIfNotPresent(T value)
+        private bool AddIfNotPresent(Node current, T value)
         {
-            ArgumentNullException.ThrowIfNull(value, nameof(value));
-
-            if (root == null)
+            var Added = true;
+            var order = comparer.Compare(value, current!.Value);
+            if (order == 0) return false;
+            if (order < 0)
             {
-                root = new Node(value);
-                count = 1;
-                return;
+                if (current.Left == null)
+                {
+                    current.Left = new Node(value) { Parent = current };
+                    count++;
+                    return true;
+                }
+                Added = AddIfNotPresent(current.Left, value);
+            }
+            else
+            {
+                if (current.Right == null)
+                {
+                    current.Right = new Node(value) { Parent = current };
+                    count++;
+                    return true;
+                }
+                Added = AddIfNotPresent(current.Right, value);
             }
 
-            var current = root;
-            var needAdd = true;
+            if (Added) PerformBalance(current);
+            return Added;
+        }
 
-            while (needAdd)
+        private void RemoveNode(Node node)
+        {
+            if (count == 1 && comparer.Compare(node.Value, root!.Value) == 0)
+                Clear();
+
+            if (node.Left == null && node.Right == null)
             {
-                var order = comparer.Compare(value, current!.Value);
-                if (order == 0) return;
-
-                if (order > 0 && current.Right == null)
+                if (comparer.Compare(node.Parent!.Value, node.Value) <= 0)
                 {
-                    current.Right = new(value);
-                    count++;
-                    needAdd = false;
+                    node.Parent.Left = null;
                 }
-                else if (order < 0 && current.Left == null)
+                else
                 {
-                    current.Left = new(value);
-                    count++;
-                    needAdd = false;
+                    node.Parent.Right = null;
                 }
-
-                current = order < 0 ? current.Left : current.Right;
             }
-            //PerformBalance(root);
+            else if (node.Left == null || node.Right == null)
+            {
+                if (comparer.Compare(node.Parent!.Value, node.Value) < 0)
+                {
+                    node.Parent.Left = node.Left ?? node.Right;
+                    node.Parent.Left!.Parent = node.Parent;
+                    PerformBalance(node.Parent.Left);
+                }
+                else
+                {
+                    node.Parent.Right = node.Left ?? node.Right;
+                    node.Parent.Right!.Parent = node.Parent;
+                    PerformBalance(node.Parent.Right);
+                }
+            }
+            else
+            {
+                var maxLeftNode = node.Left;
+
+                while (maxLeftNode.Left != null)
+                    maxLeftNode = maxLeftNode.Left;
+
+                node.Value = maxLeftNode.Value;
+                RemoveNode(maxLeftNode);
+                PerformBalance(node);
+            }
         }
 
         private void PerformBalance(Node? node)
         {
-            if (node == null) return;
+            ArgumentNullException.ThrowIfNull(node);
 
-            PerformBalance(node.Left);
-            PerformBalance(node.Right);
-
-            if (node.BalanceRatio == 2)
+            if (node.BalanceRatio == -2)
             {
-                if (node.Right != null && node.Right.BalanceRatio < 0) Rotate(node.Right, false);
-                Rotate(node, true);
+                if (node.Left != null && node.Left.BalanceRatio == 1)
+                    Rotate(node.Left, true);
+                else Rotate(node, false);
             }
-            else if (node.BalanceRatio == -2)
+            else if (node.BalanceRatio == 2)
             {
-                if (node.Left != null && node.Left.BalanceRatio > 0) Rotate(node.Left, true);
-                Rotate(node, false);
+                if (node.Right != null && node.Right.BalanceRatio == -1)
+                    Rotate(node.Right, false);
+                else Rotate(node, true);
             }
         }
 
         private void Rotate(Node node, bool isLeft)
         {
-            Node parent = isLeft ? node.Right! : node.Left!;
             if (isLeft)
             {
-                node.Right = parent.Left;
-                parent.Left = node;
+                var value = node.Value;
+                node.Value = node.Right!.Value;
+                node.Right.Value = value;
+                Node temp = node.Left!;
+                node.Left = node.Right;
+                node.Right = node.Left.Right;
+                node.Right!.Left = node.Right.Right;
+                node.Left.Right = node.Left.Left;
+                node.Left.Left = temp;
             }
             else
             {
-                node.Left = parent.Right;
-                parent.Right = node;
+                var value = node.Value;
+                node.Value = node.Left!.Value;
+                node.Left.Value = value;
+                Node temp = node.Right!;
+                node.Right = node.Left;
+                node.Left = node.Right.Left;
+                node.Right!.Left = node.Right.Right;
+                node.Right.Right = temp;
             }
-            if (node == root) root = parent;
-
         }
 
         public Node? FindNode(T value)
@@ -226,10 +265,14 @@ namespace _12
             public Node? Left { get; set; }
 
             public Node? Right { get; set; }
+            public Node? Parent { get; set; }
 
-            public int Height => 1 + (Left?.Height ?? 0) + (Right?.Height ?? 0);
+            public int Height =>
+                1 + Math.Max(
+                    Left == null ? -1 : Left.Height, Right == null ? - 1 : Right.Height);
 
-            public int BalanceRatio => (Right?.Height ?? 0) - (Left?.Height ?? 0);
+            public int BalanceRatio =>
+                (Right == null ? -1 : Right.Height) - (Left == null ? -1 : Left.Height);
         }
         #endregion
     }
