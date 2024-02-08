@@ -6,7 +6,6 @@ namespace _12
     {
         static void Main(string[] args)
         {
-            //SortedSet<sbyte>
             List<Animal> animals = new();
 
             CreateAnimals<Bird>(animals);
