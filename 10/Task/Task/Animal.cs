@@ -75,10 +75,7 @@ namespace Task
             Weight = rnd.Next(0, 100);
         }
 
-        public virtual void Show()
-        {
-            Console.WriteLine(ToString());
-        }
+        public virtual void Show() => Console.WriteLine(ToString());
 
         public override bool Equals(object? obj)
         {
@@ -88,16 +85,28 @@ namespace Task
             }
             if (obj is Animal animal)
             {
-                return animal.name == name &&
-                    animal.age == age &&
-                    animal.weight == weight;
+                return animal.Name == name &&
+                    animal.Age == age &&
+                    animal.Weight == weight;
             }
             return false;
         }
 
         public virtual int CompareTo(Animal? other)
         {
-            return string.Compare(Name, other!.Name);
+            ArgumentNullException.ThrowIfNull(other, nameof(other));
+
+            var order = string.CompareOrdinal(GetType().FullName, other.GetType().FullName);
+            if (order != 0) return order;
+
+            order = string.CompareOrdinal(name, other.Name);
+            if (order != 0) return order;
+
+            order = age.CompareTo(other.age);
+            if (order != 0) return order;
+
+            order = weight.CompareTo(other.weight);
+            return order;
         }
 
         public override int GetHashCode()

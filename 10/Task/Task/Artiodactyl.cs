@@ -48,11 +48,7 @@ namespace Task
             Suborder = (ArtiodactylSuborder)rnd.Next(0, 3);
         }
 
-        public override void Show()
-        {
-            base.Show();
-            Console.WriteLine($"{Suborder} suborder");
-        }
+        public override void Show() => Console.WriteLine(ToString());
 
         public override bool Equals(object? obj)
         {
@@ -64,9 +60,24 @@ namespace Task
             return HashCode.Combine(base.GetHashCode(), Suborder);
         }
 
+        public override string ToString()
+        {
+            return $"{base.ToString()}\n{Suborder} suborder";
+        }
+
         public override Artiodactyl Clone()
         {
             return new Artiodactyl(this);
+        }
+
+        public override int CompareTo(Animal? other)
+        {
+            var order = base.CompareTo(other);
+
+            if (order != 0) return order;
+
+            order = Suborder.CompareTo(((Artiodactyl)other!).Suborder);
+            return order;
         }
     }
 }

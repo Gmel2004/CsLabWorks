@@ -44,15 +44,11 @@ namespace Task
             wingspan = rnd.NextDouble() * 5;
         }
 
-        public override void Show()
-        {
-            base.Show();
-            Console.WriteLine($"wingspan {wingspan} m");
-        }
+        public override void Show() => Console.WriteLine(ToString());
 
         public override bool Equals(object? obj)
         {
-            return base.Equals(obj) && obj is Bird bird && bird.wingspan == wingspan;
+            return base.Equals(obj) && obj is Bird bird && bird.Wingspan == wingspan;
         }
 
         public override int GetHashCode()
@@ -60,9 +56,24 @@ namespace Task
             return HashCode.Combine(base.GetHashCode(), Name, Age, Weight, Wingspan);
         }
 
+        public override string ToString()
+        {
+            return $"{base.ToString()}\n{Wingspan} wingspan";
+        }
+
         public override object Clone()
         {
             return new Bird(this);
+        }
+
+        public override int CompareTo(Animal? other)
+        {
+            var order = base.CompareTo(other);
+
+            if (order != 0) return order;
+
+            order = Wingspan.CompareTo(((Bird)other!).wingspan);
+            return order;
         }
     }
 }

@@ -36,9 +36,9 @@ namespace _12
             Stack<Node> stack = new();
             Node current = root!;
 
-            while ((current != null && !EqualityComparer<T>.Default.Equals(current.Value, default)) || stack.Count > 0)
+            while (current != null || stack.Count > 0)
             {
-                while (current != null && !EqualityComparer<T>.Default.Equals(current.Value, default))
+                while (current != null)
                 {
                     stack.Push(current);
                     current = current.Left!;
@@ -114,18 +114,24 @@ namespace _12
         #region Specific operations
         private bool AddIfNotPresent(Node current, T value)
         {
-            var Added = true;
+            var Added = false;
             var order = comparer.Compare(value, current!.Value);
-            if (order == 0) return false;
+
+            if (order == 0)
+            {
+                current.Value = value;
+                return false;
+            }
+
             if (order < 0)
             {
                 if (current.Left == null)
                 {
                     current.Left = new Node(value) { Parent = current };
                     count++;
-                    return true;
+                    Added = true;
                 }
-                Added = AddIfNotPresent(current.Left, value);
+                else Added = AddIfNotPresent(current.Left, value);
             }
             else
             {
@@ -133,9 +139,9 @@ namespace _12
                 {
                     current.Right = new Node(value) { Parent = current };
                     count++;
-                    return true;
+                    Added = true;
                 }
-                Added = AddIfNotPresent(current.Right, value);
+                else Added = AddIfNotPresent(current.Right, value);
             }
 
             if (Added) PerformBalance(current);
@@ -231,12 +237,9 @@ namespace _12
             }
         }
 
-        public Node? FindNode(T value)
+        private Node? FindNode(T value)
         {
-            if (root == null) return null;
-
             Node? current = root;
-
             while (current != null)
             {
                 var order = comparer.Compare(value, current.Value);
@@ -255,6 +258,10 @@ namespace _12
                 && Count == set.Count
                 && this.SequenceEqual(set);
         }
+
+        public object Clone() => new MySortedSet<T>(this, comparer);
+
+        public object ShallowCopy() => MemberwiseClone();
         #endregion
 
         #region Helper Classes
@@ -269,7 +276,7 @@ namespace _12
 
             public int Height =>
                 1 + Math.Max(
-                    Left == null ? -1 : Left.Height, Right == null ? - 1 : Right.Height);
+                    Left == null ? -1 : Left.Height, Right == null ? -1 : Right.Height);
 
             public int BalanceRatio =>
                 (Right == null ? -1 : Right.Height) - (Left == null ? -1 : Left.Height);

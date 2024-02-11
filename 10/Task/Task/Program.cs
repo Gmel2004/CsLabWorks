@@ -43,10 +43,8 @@ namespace Task
             animals.ForEach(x => { x.Show(); Console.WriteLine(); });
 
             Console.WriteLine("---БИНАРНЫЙ ПОИСК:---");
-            Animal animal = new()
-            {
-                Name = animals[animals.Count / 2].Name
-            };
+            
+            var animal = animals[animals.Count / 2];
             int indexOfSearch = animals.BinarySearch(animal);
             if (indexOfSearch > -1)
             {
