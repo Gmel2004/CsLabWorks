@@ -13,10 +13,7 @@ namespace _12
         #region Constructors
         public MySortedSet() : this(Comparer<T>.Default) { }
 
-        public MySortedSet(IComparer<T> comparer)
-        {
-            this.comparer = comparer ?? Comparer<T>.Default;
-        }
+        public MySortedSet(IComparer<T> comparer) => this.comparer = comparer ?? Comparer<T>.Default;
 
         public MySortedSet(IEnumerable<T> collection) : this(collection, Comparer<T>.Default) { }
 
@@ -52,7 +49,7 @@ namespace _12
             yield break;
         }
 
-        IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable<T>)this).GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => throw new Exception();
 
         #endregion
 
@@ -69,10 +66,8 @@ namespace _12
             {
                 root = new Node(value);
                 count = 1;
-                return;
             }
-
-            AddIfNotPresent(root, value);
+            else AddIfNotPresent(root, value);
         }
 
         public bool Remove(T value)
@@ -81,7 +76,8 @@ namespace _12
             if (node == null) return false;
 
             count--;
-            RemoveNode(node);
+            if (count == 0) root = null;
+            else RemoveNode(node);
             return true;
         }
 
@@ -114,7 +110,6 @@ namespace _12
         #region Specific operations
         private bool AddIfNotPresent(Node current, T value)
         {
-            var Added = false;
             var order = comparer.Compare(value, current!.Value);
 
             if (order == 0)
@@ -123,118 +118,86 @@ namespace _12
                 return false;
             }
 
-            if (order < 0)
+            var next = order < 0 ? current.Left : current.Right;
+            if (next == null)
             {
-                if (current.Left == null)
-                {
-                    current.Left = new Node(value) { Parent = current };
-                    count++;
-                    Added = true;
-                }
-                else Added = AddIfNotPresent(current.Left, value);
+                next = new Node(value) { Parent = current };
+                if (order < 0) current.Left = next;
+                else current.Right = next;
+                count++;
+                PerformBalance(current);
+                return true;
             }
-            else
+            if (AddIfNotPresent(next, value))
             {
-                if (current.Right == null)
-                {
-                    current.Right = new Node(value) { Parent = current };
-                    count++;
-                    Added = true;
-                }
-                else Added = AddIfNotPresent(current.Right, value);
+                PerformBalance(current);
+                return true;
             }
-
-            if (Added) PerformBalance(current);
-            return Added;
+            return false;
         }
 
         private void RemoveNode(Node node)
         {
-            if (count == 1 && comparer.Compare(node.Value, root!.Value) == 0)
-                Clear();
-
-            if (node.Left == null && node.Right == null)
+            if (node.Left == null || node.Right == null)
             {
-                if (comparer.Compare(node.Parent!.Value, node.Value) <= 0)
-                {
-                    node.Parent.Left = null;
-                }
-                else
-                {
-                    node.Parent.Right = null;
-                }
-            }
-            else if (node.Left == null || node.Right == null)
-            {
-                if (comparer.Compare(node.Parent!.Value, node.Value) < 0)
-                {
-                    node.Parent.Left = node.Left ?? node.Right;
-                    node.Parent.Left!.Parent = node.Parent;
-                    PerformBalance(node.Parent.Left);
-                }
-                else
-                {
-                    node.Parent.Right = node.Left ?? node.Right;
-                    node.Parent.Right!.Parent = node.Parent;
-                    PerformBalance(node.Parent.Right);
-                }
+                var next = node.Left ?? node.Right;
+                if (next != null) next!.Parent = node.Parent;
+                if (node.Parent!.Left != null
+                    && comparer.Compare(node.Parent.Left.Value, node.Value) <= 0)
+                    node.Parent.Left = next;
+                else node.Parent.Right = next;
             }
             else
             {
                 var maxLeftNode = node.Left;
-
-                while (maxLeftNode.Left != null)
-                    maxLeftNode = maxLeftNode.Left;
+                while (maxLeftNode.Right != null)
+                    maxLeftNode = maxLeftNode.Right;
 
                 node.Value = maxLeftNode.Value;
                 RemoveNode(maxLeftNode);
-                PerformBalance(node);
             }
+            PerformBalance(node.Parent);
         }
 
         private void PerformBalance(Node? node)
         {
-            ArgumentNullException.ThrowIfNull(node);
+            ArgumentNullException.ThrowIfNull(node, nameof(node));
 
-            if (node.BalanceRatio == -2)
-            {
-                if (node.Left != null && node.Left.BalanceRatio == 1)
-                    Rotate(node.Left, true);
-                else Rotate(node, false);
-            }
-            else if (node.BalanceRatio == 2)
-            {
-                if (node.Right != null && node.Right.BalanceRatio == -1)
-                    Rotate(node.Right, false);
-                else Rotate(node, true);
-            }
+            var balanceRatio = node.BalanceRatio;
+            if (Math.Abs(balanceRatio) != 2) return;
+
+            var isLeftTurn = balanceRatio < 0;
+            var next = isLeftTurn ? node.Left : node.Right;
+            var nextBalanceRatio = next!.BalanceRatio;
+            if (balanceRatio / nextBalanceRatio == -2) Rotate(next, isLeftTurn);
+            Rotate(node, !isLeftTurn);
         }
 
-        private void Rotate(Node node, bool isLeft)
+        private void Rotate(Node node, bool isLeftTurn)
         {
-            if (isLeft)
+            var next = isLeftTurn ? node.Right : node.Left;
+            next!.Parent = node.Parent;
+            if (node.Parent != null)
             {
-                var value = node.Value;
-                node.Value = node.Right!.Value;
-                node.Right.Value = value;
-                Node temp = node.Left!;
-                node.Left = node.Right;
-                node.Right = node.Left.Right;
-                node.Right!.Left = node.Right.Right;
-                node.Left.Right = node.Left.Left;
-                node.Left.Left = temp;
+                if (comparer.Compare(node.Parent!.Value, node.Value) < 0)
+                    node.Parent.Left = next;
+                else node.Parent.Right = next;
+            }
+            node.Parent = next;
+            Node? temp;
+            if (isLeftTurn)
+            {
+                temp = next.Left;
+                next.Left = node;
+                node.Right = temp;
             }
             else
             {
-                var value = node.Value;
-                node.Value = node.Left!.Value;
-                node.Left.Value = value;
-                Node temp = node.Right!;
-                node.Right = node.Left;
-                node.Left = node.Right.Left;
-                node.Right!.Left = node.Right.Right;
-                node.Right.Right = temp;
+                temp = next.Right;
+                next.Right = node;
+                node.Left = temp;
             }
+            if (temp != null) temp.Parent = node;
         }
 
         private Node? FindNode(T value)
@@ -264,7 +227,6 @@ namespace _12
         public object ShallowCopy() => MemberwiseClone();
         #endregion
 
-        #region Helper Classes
         public sealed class Node(T value)
         {
             public T Value { get; set; } = value;
@@ -272,6 +234,7 @@ namespace _12
             public Node? Left { get; set; }
 
             public Node? Right { get; set; }
+
             public Node? Parent { get; set; }
 
             public int Height =>
@@ -281,6 +244,5 @@ namespace _12
             public int BalanceRatio =>
                 (Right == null ? -1 : Right.Height) - (Left == null ? -1 : Left.Height);
         }
-        #endregion
     }
 }

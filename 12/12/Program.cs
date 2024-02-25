@@ -35,18 +35,18 @@ namespace _12
                 Console.WriteLine();
             }
 
-            Console.WriteLine("---Проверка поиска---");
-            Console.WriteLine("1) firstMySortedSetForAnimals");
-            var node = firstMySortedSetForAnimals.FindNode(animals[2]);
-            Console.WriteLine("Значение:");
-            Console.WriteLine(node!.Value);
-            Console.WriteLine();
+            //Console.WriteLine("---Проверка поиска---");
+            //Console.WriteLine("1) firstMySortedSetForAnimals");
+            //var node = firstMySortedSetForAnimals.FindNode(animals[2]);
+            //Console.WriteLine("Значение:");
+            //Console.WriteLine(node!.Value);
+            //Console.WriteLine();
 
-            Console.WriteLine("2) secondMySortedSetForAnimals");
-            node = secondMySortedSetForAnimals.FindNode(animals[2]);
-            Console.WriteLine("Значение:");
-            Console.WriteLine(node!.Value);
-            Console.WriteLine();
+            //Console.WriteLine("2) secondMySortedSetForAnimals");
+            //node = secondMySortedSetForAnimals.FindNode(animals[2]);
+            //Console.WriteLine("Значение:");
+            //Console.WriteLine(node!.Value);
+            //Console.WriteLine();
 
             Console.WriteLine("---Проверка удаления---");
             Console.WriteLine("1) firstMySortedSetForAnimals");
