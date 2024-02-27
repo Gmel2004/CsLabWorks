@@ -10,7 +10,7 @@ namespace Tests
             get
             {
                 MySortedSet<int> set = new();
-                MyOtherSortedSet<int> other = new();
+                MySortedSetExperemental<int> other = new();
                 for (var i = 0; i < 1_000_000; i++)
                 {
                     set.Add(i);

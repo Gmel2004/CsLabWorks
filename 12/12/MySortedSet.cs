@@ -142,10 +142,14 @@ namespace _12
             {
                 var next = node.Left ?? node.Right;
                 if (next != null) next!.Parent = node.Parent;
-                if (node.Parent!.Left != null
-                    && comparer.Compare(node.Parent.Left.Value, node.Value) <= 0)
-                    node.Parent.Left = next;
-                else node.Parent.Right = next;
+                if (node.Parent != null)
+                {
+                    if (comparer.Compare(node.Value, node.Parent.Value) <= 0)
+                        node.Parent.Left = next;
+                    else node.Parent.Right = next;
+                    if (next != null) PerformBalance(next);
+                }
+                else root = next;
             }
             else
             {
@@ -155,21 +159,19 @@ namespace _12
 
                 node.Value = maxLeftNode.Value;
                 RemoveNode(maxLeftNode);
+                PerformBalance(node);
             }
-            PerformBalance(node.Parent);
         }
 
-        private void PerformBalance(Node? node)
+        private void PerformBalance(Node node)
         {
-            ArgumentNullException.ThrowIfNull(node, nameof(node));
-
             var balanceRatio = node.BalanceRatio;
             if (Math.Abs(balanceRatio) != 2) return;
 
             var isLeftTurn = balanceRatio < 0;
             var next = isLeftTurn ? node.Left : node.Right;
             var nextBalanceRatio = next!.BalanceRatio;
-            if (balanceRatio / nextBalanceRatio == -2) Rotate(next, isLeftTurn);
+            if (balanceRatio == -2 * nextBalanceRatio) Rotate(next, isLeftTurn);
             Rotate(node, !isLeftTurn);
         }
 
@@ -179,10 +181,11 @@ namespace _12
             next!.Parent = node.Parent;
             if (node.Parent != null)
             {
-                if (comparer.Compare(node.Parent!.Value, node.Value) < 0)
+                if (comparer.Compare(node.Value, node.Parent!.Value) < 0)
                     node.Parent.Left = next;
                 else node.Parent.Right = next;
             }
+            else root = next;
             node.Parent = next;
             Node? temp;
             if (isLeftTurn)
@@ -202,6 +205,8 @@ namespace _12
 
         private Node? FindNode(T value)
         {
+            if (value == null) return null;
+
             Node? current = root;
             while (current != null)
             {

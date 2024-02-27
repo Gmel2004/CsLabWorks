@@ -2,7 +2,7 @@
 
 namespace _12
 {
-    public class MyOtherSortedSet<T> :
+    public class MySortedSetExperemental<T> :
         ICollection<T>
     {
         private Node? root;
@@ -11,16 +11,16 @@ namespace _12
         private readonly IComparer<T> comparer;
 
         #region Constructors
-        public MyOtherSortedSet() : this(Comparer<T>.Default) { }
+        public MySortedSetExperemental() : this(Comparer<T>.Default) { }
 
-        public MyOtherSortedSet(IComparer<T> comparer)
+        public MySortedSetExperemental(IComparer<T> comparer)
         {
             this.comparer = comparer ?? Comparer<T>.Default;
         }
 
-        public MyOtherSortedSet(IEnumerable<T> collection) : this(collection, Comparer<T>.Default) { }
+        public MySortedSetExperemental(IEnumerable<T> collection) : this(collection, Comparer<T>.Default) { }
 
-        public MyOtherSortedSet(IEnumerable<T> collection, IComparer<T> comparer) : this(comparer)
+        public MySortedSetExperemental(IEnumerable<T> collection, IComparer<T> comparer) : this(comparer)
         {
             if (collection != null)
             {
@@ -257,7 +257,7 @@ namespace _12
 
         public override bool Equals(object? obj)
         {
-            return obj is MyOtherSortedSet<T> set
+            return obj is MySortedSetExperemental<T> set
                 && comparer.Equals(set.comparer)
                 && Count == set.Count
                 && this.SequenceEqual(set);
