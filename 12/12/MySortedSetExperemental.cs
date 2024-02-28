@@ -37,7 +37,7 @@ namespace _12
             yield break;
         }
 
-        IEnumerator IEnumerable.GetEnumerator() => throw new Exception();
+        IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable<T>)this).GetEnumerator();
 
         #endregion
 
@@ -53,7 +53,11 @@ namespace _12
             if (NullOrDefault(root))
             {
                 if (root == null) root = new Node(value);
-                else root.Value = value;
+                else
+                {
+                    root.Value = value;
+                    root.IsInitialized = true;
+                }
                 count = 1;
             }
             else AddIfNotPresent(root!, value);
@@ -75,6 +79,7 @@ namespace _12
             foreach (var node in GetNodesAscending())
             {
                 node.Value = default!;
+                node.IsInitialized = false;
             }
 
             count = 0;
@@ -120,7 +125,11 @@ namespace _12
                     if (order < 0) current.Left = next;
                     else current.Right = next;
                 }
-                else next.Value = value;
+                else
+                {
+                    next.Value = value;
+                    next.IsInitialized = true;
+                }
                 count++;
                 PerformBalance(current);
                 return true;
@@ -227,8 +236,7 @@ namespace _12
         }
 
         private static bool NullOrDefault(Node? node) =>
-            node == null
-            || EqualityComparer<T>.Default.Equals(node.Value, default);
+            node == null || !node.IsInitialized;
 
         private List<Node> GetNodesAscending()
         {
@@ -273,6 +281,8 @@ namespace _12
             public Node? Right { get; set; }
 
             public Node? Parent { get; set; }
+
+            public bool IsInitialized { get; set; } = true;
 
             public int Height =>
                 1 + Math.Max(

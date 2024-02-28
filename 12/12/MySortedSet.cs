@@ -49,7 +49,7 @@ namespace _12
             yield break;
         }
 
-        IEnumerator IEnumerable.GetEnumerator() => throw new Exception();
+        IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable<T>)this).GetEnumerator();
 
         #endregion
 

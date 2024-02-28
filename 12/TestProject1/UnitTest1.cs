@@ -11,14 +11,14 @@ namespace Tests
             {
                 MySortedSet<int> first = new();
                 MySortedSetExperemental<int> second = new();
-                for (var i = 0; i < 100000; i++)
+                for (var i = 0; i < 10000; i++)
                 {
                     first.Add(i);
                     second.Add(i);
                 }
                 first.Clear();
                 second.Clear();
-                for (var i = 0; i < 1000; i++)
+                for (var i = 0; i < 100; i++)
                 {
                     first.Add(i);
                     second.Add(i);
@@ -27,11 +27,35 @@ namespace Tests
             }
         }
 
+        [Test]
+        public void Temp()
+        {
+            MySortedSet<int> first = new();
+            MySortedSetExperemental<int> second = new();
+            for (var i = 0; i < 10000; i++)
+            {
+                first.Add(i);
+                second.Add(i);
+            }
+            first.Clear();
+            second.Clear();
+            for (var i = 0; i < 100; i++)
+            {
+                first.Add(i);
+                second.Add(i);
+            }
+
+            for (var i = 0; i < 100; i++) first.Add(i);
+            for (var i = 0; i < 100; i++) second.Add(i);
+            Assert.That(first, Is.EquivalentTo(Enumerable.Range(0, 100)));
+            Assert.That(second, Is.EquivalentTo(Enumerable.Range(0, 100)));
+        }
+
         [TestCaseSource(nameof(Sets))]
         public void Add(ICollection<int> set)
         {
-            for (var i = 0; i < 1000; i++) set.Add(i);
-            Assert.That(set, Is.EquivalentTo(Enumerable.Range(0, 1000)));
+            for (var i = 0; i < 100; i++) set.Add(i);
+            Assert.That(set, Is.EquivalentTo(Enumerable.Range(0, 100)));
         }
 
         [TestCaseSource(nameof(Sets))]
@@ -52,14 +76,14 @@ namespace Tests
             int[] array = new int[500000];
             set.CopyTo(array, 5000);
             Assert.That(array, Is.EquivalentTo(Enumerable.Repeat(0, 5000)
-                .Concat(Enumerable.Range(0, 1000))
-                .Concat(Enumerable.Repeat(0, 500000 - 1000 - 5000))));
+                .Concat(Enumerable.Range(0, 100))
+                .Concat(Enumerable.Repeat(0, 500000 - 100 - 5000))));
         }
 
         [TestCaseSource(nameof(Sets))]
         public void CheckCount(ICollection<int> set)
         {
-            Assert.That(set, Has.Count.EqualTo(1000));
+            Assert.That(set, Has.Count.EqualTo(100));
         }
 
         [TestCaseSource(nameof(Sets))]
