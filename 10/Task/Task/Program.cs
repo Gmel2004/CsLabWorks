@@ -26,7 +26,7 @@ namespace Task
                 .Select(x => x.Name).DefaultIfEmpty("None")));
             Console.WriteLine();
 
-            //Средний возвраст парнокопытных из подотряда Suina
+            //Средний возраст парнокопытных из подотряда Suina
             Console.WriteLine(animals.Where(x => x is Artiodactyl artiodactyl
             && artiodactyl.Suborder == Artiodactyl.ArtiodactylSuborder.Suina)
                 .DefaultIfEmpty(new Artiodactyl()).Average(x => x.Age));
@@ -34,11 +34,13 @@ namespace Task
 
             Console.WriteLine("---СОРТИРОВКА:---");
 
-            Console.WriteLine("\t---Внешний компаратор:---");
-            animals.Sort(new AnimalWeightComparer());
+            Console.WriteLine("\t---Внешний компаратор---");
+            Console.WriteLine("\tПо имени:");
+            animals.Sort(new AnimalNameComparer());
             animals.ForEach(x => { x.Show(); Console.WriteLine(); });
 
-            Console.WriteLine("\t---Реализованный компаратор:---");
+            Console.WriteLine("\t---Реализованный компаратор---");
+            Console.WriteLine("\tПо типу и полям:");
             animals.Sort();
             animals.ForEach(x => { x.Show(); Console.WriteLine(); });
 

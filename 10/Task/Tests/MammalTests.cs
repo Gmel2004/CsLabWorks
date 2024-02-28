@@ -30,7 +30,7 @@ namespace Tests
         {
             Mammal mammal = new();
 
-            Assert.AreEqual("standartName:\n0 y. o.\n0 kg\nMonotremes subclass", mammal.ToString());
+            Assert.AreEqual("standartName:\n0 y. o.\n1 kg\nMonotremes subclass", mammal.ToString());
         }
 
         [TestMethod]

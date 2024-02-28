@@ -147,9 +147,9 @@ namespace _12
                     if (comparer.Compare(node.Value, node.Parent.Value) <= 0)
                         node.Parent.Left = next;
                     else node.Parent.Right = next;
-                    if (next != null) PerformBalance(next);
                 }
                 else root = next;
+                if (next != null) PerformBalance(next);
             }
             else
             {

@@ -5,16 +5,12 @@ VisualStudioVersion = 17.8.34511.84
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "12", "12\12.csproj", "{6DD67E03-12FB-4C02-A1A8-A64576842FA4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MySortedSetTests", "MySortedSetTests\MySortedSetTests.csproj", "{8EA6D732-1271-4AF8-BE3E-21C15C871A51}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2F88B442-D8AD-4C4B-B4A2-19257A323C63}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyOtherSortedSetTests", "MyOtherSortedSetTests\MyOtherSortedSetTests.csproj", "{F64EF567-97B1-4660-96C3-F2FC7883ADD2}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{637B4DAC-6C1F-464E-9464-26B630EBF28D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests", "Tests\Tests.csproj", "{637B4DAC-6C1F-464E-9464-26B630EBF28D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -26,14 +22,6 @@ Global
 		{6DD67E03-12FB-4C02-A1A8-A64576842FA4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6DD67E03-12FB-4C02-A1A8-A64576842FA4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6DD67E03-12FB-4C02-A1A8-A64576842FA4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8EA6D732-1271-4AF8-BE3E-21C15C871A51}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8EA6D732-1271-4AF8-BE3E-21C15C871A51}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8EA6D732-1271-4AF8-BE3E-21C15C871A51}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8EA6D732-1271-4AF8-BE3E-21C15C871A51}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F64EF567-97B1-4660-96C3-F2FC7883ADD2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F64EF567-97B1-4660-96C3-F2FC7883ADD2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F64EF567-97B1-4660-96C3-F2FC7883ADD2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F64EF567-97B1-4660-96C3-F2FC7883ADD2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{637B4DAC-6C1F-464E-9464-26B630EBF28D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{637B4DAC-6C1F-464E-9464-26B630EBF28D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{637B4DAC-6C1F-464E-9464-26B630EBF28D}.Release|Any CPU.ActiveCfg = Release|Any CPU

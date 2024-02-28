@@ -25,9 +25,9 @@ namespace _12
                 Console.WriteLine();
             }
 
-            MySortedSet<Animal> second = new(animals, new AnimalWeightComparer());
+            MySortedSet<Animal> second = new(animals, new AnimalNameComparer());
             Console.WriteLine("---Проход по MySortedSet<Animal> secondMySortedSetForAnimals---");
-            Console.WriteLine("(Использование внешнего компоратора - по весу):");
+            Console.WriteLine("(Использование внешнего компоратора - по имени):");
 
             foreach (var item in second)
             {

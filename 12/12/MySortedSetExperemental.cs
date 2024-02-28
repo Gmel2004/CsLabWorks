@@ -13,10 +13,7 @@ namespace _12
         #region Constructors
         public MySortedSetExperemental() : this(Comparer<T>.Default) { }
 
-        public MySortedSetExperemental(IComparer<T> comparer)
-        {
-            this.comparer = comparer ?? Comparer<T>.Default;
-        }
+        public MySortedSetExperemental(IComparer<T> comparer) => this.comparer = comparer ?? Comparer<T>.Default;
 
         public MySortedSetExperemental(IEnumerable<T> collection) : this(collection, Comparer<T>.Default) { }
 
@@ -35,13 +32,12 @@ namespace _12
         {
             foreach (var node in GetNodesAscending())
             {
-                yield return node.Value;
+                yield return node.Value!;
             }
-
             yield break;
         }
 
-        IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable<T>)this).GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => throw new Exception();
 
         #endregion
 
@@ -50,38 +46,28 @@ namespace _12
 
         public bool IsReadOnly => false;
 
-        public void Add(T value) => AddIfNotPresent(value);
+        public void Add(T value)
+        {
+            ArgumentNullException.ThrowIfNull(value, nameof(value));
+
+            if (NullOrDefault(root))
+            {
+                if (root == null) root = new Node(value);
+                else root.Value = value;
+                count = 1;
+            }
+            else AddIfNotPresent(root!, value);
+        }
 
         public bool Remove(T value)
         {
-            Node? parent = null;
-            Node? current = root;
+            Node node = FindNode(value)!;
+            if (NullOrDefault(node)) return false;
 
-            while (current != null && !EqualityComparer<T>.Default.Equals(current.Value, default))
-            {
-                int order = comparer.Compare(value, current.Value);
-                if (order == 0)
-                {
-                    Node? node = (current.Left == null || EqualityComparer<T>.Default.Equals(current.Left.Value, default))
-                        ? current.Right
-                        : current.Left;
-
-                    if (parent == null || EqualityComparer<T>.Default.Equals(parent.Value, default))
-                        root = node;
-                    else if (comparer.Compare(value, parent.Value) < 0)
-                        parent.Left = node;
-                    else
-                        parent.Right = node;
-
-                    PerformBalance(root);
-                    return true;
-                }
-
-                parent = current;
-                current = order < 0 ? current.Left : current.Right;
-            }
-
-            return false;
+            count--;
+            if (count == 0) root = null;
+            else RemoveNode(node);
+            return true;
         }
 
         public void Clear()
@@ -94,7 +80,7 @@ namespace _12
             count = 0;
         }
 
-        public bool Contains(T value) => FindNode(value) != null;
+        public bool Contains(T value) => !NullOrDefault(FindNode(value));
 
         public void CopyTo(T[] array) => CopyTo(array, 0, Count);
 
@@ -115,15 +101,143 @@ namespace _12
         #endregion
 
         #region Specific operations
+        private bool AddIfNotPresent(Node current, T value)
+        {
+            var order = comparer.Compare(value, current!.Value);
+
+            if (order == 0)
+            {
+                current.Value = value;
+                return false;
+            }
+
+            var next = order < 0 ? current.Left : current.Right;
+            if (NullOrDefault(next))
+            {
+                if (next == null)
+                {
+                    next = new Node(value) { Parent = current };
+                    if (order < 0) current.Left = next;
+                    else current.Right = next;
+                }
+                else next.Value = value;
+                count++;
+                PerformBalance(current);
+                return true;
+            }
+            if (AddIfNotPresent(next!, value))
+            {
+                PerformBalance(current);
+                return true;
+            }
+            return false;
+        }
+
+        private void RemoveNode(Node node)
+        {
+            if (node.Left == null || node.Right == null)
+            {
+                var next = node.Left ?? node.Right;
+                if (next != null) next.Parent = node.Parent;
+                if (node.Parent != null)
+                {
+                    if (comparer.Compare(node.Value, node.Parent.Value) <= 0)
+                        node.Parent.Left = next;
+                    else node.Parent.Right = next;
+                }
+                else root = next;
+                if (next != null) PerformBalance(next);
+            }
+            else
+            {
+                Node? relevantNode;
+                if (NullOrDefault(node.Left) && NullOrDefault(node.Right)
+                    || !NullOrDefault(node.Left))
+                {
+                    relevantNode = node.Left;
+                    while (!NullOrDefault(relevantNode!.Right))
+                        relevantNode = relevantNode.Right;
+                }
+                else
+                {
+                    relevantNode = node.Right;
+                    while (!NullOrDefault(relevantNode!.Left))
+                        relevantNode = relevantNode.Left;
+                }
+                node.Value = relevantNode.Value;
+                RemoveNode(relevantNode);
+                PerformBalance(node);
+            }
+        }
+
+        private void PerformBalance(Node node)
+        {
+            var balanceRatio = node.BalanceRatio;
+            if (Math.Abs(balanceRatio) != 2) return;
+
+            var isLeftTurn = balanceRatio < 0;
+            var next = isLeftTurn ? node.Left : node.Right;
+            var nextBalanceRatio = next!.BalanceRatio;
+            if (balanceRatio == -2 * nextBalanceRatio) Rotate(next, isLeftTurn);
+            Rotate(node, !isLeftTurn);
+        }
+
+        private void Rotate(Node node, bool isLeftTurn)
+        {
+            var next = isLeftTurn ? node.Right : node.Left;
+            next!.Parent = node.Parent;
+            if (node.Parent != null)
+            {
+                if (comparer.Compare(node.Value, node.Parent!.Value) < 0)
+                    node.Parent.Left = next;
+                else node.Parent.Right = next;
+            }
+            else root = next;
+            node.Parent = next;
+            Node? temp;
+            if (isLeftTurn)
+            {
+                temp = next.Left;
+                next.Left = node;
+                node.Right = temp;
+            }
+            else
+            {
+                temp = next.Right;
+                next.Right = node;
+                node.Left = temp;
+            }
+            if (temp != null) temp!.Parent = node;
+        }
+
+        private Node? FindNode(T value)
+        {
+            if (value == null) return null;
+
+            Node? current = root;
+            while (!NullOrDefault(current))
+            {
+                var order = comparer.Compare(value, current!.Value);
+                if (order == 0) break;
+
+                current = order < 0 ? current.Left : current.Right;
+            }
+
+            return current;
+        }
+
+        private static bool NullOrDefault(Node? node) =>
+            node == null
+            || EqualityComparer<T>.Default.Equals(node.Value, default);
+
         private List<Node> GetNodesAscending()
         {
             List<Node> nodes = new();
             Stack<Node> stack = new();
             Node current = root!;
-
-            while ((current != null && !EqualityComparer<T>.Default.Equals(current.Value, default)) || stack.Count > 0)
+            while (!NullOrDefault(current) || stack.Count > 0)
             {
-                while (current != null && !EqualityComparer<T>.Default.Equals(current.Value, default))
+                while (!NullOrDefault(current))
                 {
                     stack.Push(current);
                     current = current.Left!;
@@ -133,126 +247,8 @@ namespace _12
                 nodes.Add(current);
                 current = current.Right!;
             }
-
+            
             return nodes;
-        }
-
-        private void AddIfNotPresent(T value)
-        {
-            ArgumentNullException.ThrowIfNull(value, nameof(value));
-
-            if (root == null || root.Value == null)
-            {
-                root = new Node(value);
-                count = 1;
-                return;
-            }
-
-            if (EqualityComparer<T>.Default.Equals(root.Value, default))
-            {
-                root.Value = value;
-                count = 1;
-                return;
-            }
-
-            var current = root;
-            var needAdd = true;
-
-            while (needAdd)
-            {
-                var order = comparer.Compare(value, current!.Value);
-                if (order == 0) return;
-
-                if (order > 0)
-                {
-                    if (current.Right == null)
-                    {
-                        current.Right = new(value);
-                        count++;
-                        needAdd = false;
-                    }
-                    else if (EqualityComparer<T>.Default.Equals(current.Right.Value, default))
-                    {
-                        current.Right.Value = value;
-                        count++;
-                        needAdd = false;
-                    }
-
-                }
-                else
-                {
-                    if (current.Left == null)
-                    {
-                        current.Left = new(value);
-                        count++;
-                        needAdd = false;
-                    }
-                    else if (EqualityComparer<T>.Default.Equals(current.Left.Value, default))
-                    {
-                        current.Left.Value = value;
-                        count++;
-                        needAdd = false;
-                    }
-                }
-
-                current = order < 0 ? current.Left : current.Right;
-            }
-            PerformBalance(root);
-        }
-
-        private void PerformBalance(Node? node)
-        {
-            if (node == null || node.Value == null) return;
-
-            PerformBalance(node.Left);
-            PerformBalance(node.Right);
-
-            if (node.BalanceRatio == 2)
-            {
-                if (node.Right != null && !EqualityComparer<T>.Default.Equals(node.Right.Value, default)
-                    && node.Right.BalanceRatio < 0) Rotate(node.Right, false);
-                Rotate(node, true);
-            }
-            else if (node.BalanceRatio == -2)
-            {
-                if (node.Left != null && !EqualityComparer<T>.Default.Equals(node.Left.Value, default)
-                    && node.Left.BalanceRatio > 0) Rotate(node.Left, true);
-                Rotate(node, false);
-            }
-        }
-
-        private void Rotate(Node node, bool isLeft)
-        {
-            Node parent = isLeft ? node.Right! : node.Left!;
-            if (isLeft)
-            {
-                node.Right = parent.Left;
-                parent.Left = node;
-            }
-            else
-            {
-                node.Left = parent.Right;
-                parent.Right = node;
-            }
-            if (node == root) root = parent;
-
-        }
-
-        public Node? FindNode(T value)
-        {
-            if (root == null || EqualityComparer<T>.Default.Equals(root.Value, default)) return null;
-
-            Node? current = root;
-
-            while (current != null && !EqualityComparer<T>.Default.Equals(current.Value, default))
-            {
-                var order = comparer.Compare(value, current.Value);
-                if (order == 0) break;
-
-                current = order < 0 ? current.Left : current.Right;
-            }
-
-            return current;
         }
 
         public override bool Equals(object? obj)
@@ -262,9 +258,12 @@ namespace _12
                 && Count == set.Count
                 && this.SequenceEqual(set);
         }
+
+        public object Clone() => new MySortedSetExperemental<T>(this, comparer);
+
+        public object ShallowCopy() => MemberwiseClone();
         #endregion
 
-        #region Helper Classes
         public sealed class Node(T value)
         {
             public T Value { get; set; } = value;
@@ -273,10 +272,14 @@ namespace _12
 
             public Node? Right { get; set; }
 
-            public int Height => 1 + (Left?.Height ?? 0) + (Right?.Height ?? 0);
+            public Node? Parent { get; set; }
 
-            public int BalanceRatio => (Right?.Height ?? 0) - (Left?.Height ?? 0);
+            public int Height =>
+                1 + Math.Max(
+                    NullOrDefault(Left) ? -1 : Left!.Height, NullOrDefault(Right) ? -1 : Right!.Height);
+
+            public int BalanceRatio =>
+                (NullOrDefault(Right) ? -1 : Right!.Height) - (NullOrDefault(Left) ? -1 : Left!.Height);
         }
-        #endregion
     }
 }

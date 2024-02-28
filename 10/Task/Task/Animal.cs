@@ -6,7 +6,7 @@ namespace Task
     {
         protected string name = "standartName";
         protected int age;
-        protected double weight;
+        protected double weight = 1;
 
         public string Name
         {
@@ -38,9 +38,9 @@ namespace Task
         {
             set
             {
-                if (value < 0)
+                if (value <= 0)
                 {
-                    throw new ArgumentException($"Ошибка! {nameof(Weight)} не может быть меньше нуля!");
+                    throw new ArgumentException($"Ошибка! {nameof(Weight)} обязан быть положительным!");
                 }
                 weight = value;
             }
@@ -70,9 +70,14 @@ namespace Task
             Random rnd = new();
             Name = (char)rnd.
                 Next(65, 91) +
-                string.Join("", Enumerable.Range(0, rnd.Next(3, 7)).Select(x => (char)rnd.Next(97, 123)));
+                string.Join("",
+                Enumerable
+                .Range(0, rnd.Next(3, 7))
+                .Select(x =>
+                (char)rnd.Next(97, 123)));
             Age = rnd.Next(0, 100);
-            Weight = rnd.Next(0, 100);
+            Weight = rnd.Next(0, 100) + rnd.Next(0, 100) / 100d;
+            if (Weight == 0) Weight = 1;
         }
 
         public virtual void Show() => Console.WriteLine(ToString());
@@ -94,12 +99,12 @@ namespace Task
 
         public virtual int CompareTo(Animal? other)
         {
-            ArgumentNullException.ThrowIfNull(other, nameof(other));
+            if (other == null) return 1;
 
-            var order = string.CompareOrdinal(GetType().FullName, other.GetType().FullName);
+            var order = string.Compare(GetType().FullName, other.GetType().FullName);
             if (order != 0) return order;
 
-            order = string.CompareOrdinal(name, other.Name);
+            order = string.Compare(name, other.Name);
             if (order != 0) return order;
 
             order = age.CompareTo(other.age);
