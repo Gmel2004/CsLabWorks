@@ -2,7 +2,7 @@
 
 namespace _12
 {
-    public class MySortedSet<T> :
+    public class MySortedSetExperemental<T> :
         ICollection<T>, ICloneable
     {
         private Node? root;
@@ -10,13 +10,13 @@ namespace _12
         private readonly IComparer<T> comparer;
 
         #region Constructors
-        public MySortedSet() : this(Comparer<T>.Default) { }
+        public MySortedSetExperemental() : this(Comparer<T>.Default) { }
 
-        public MySortedSet(IComparer<T> comparer) => this.comparer = comparer ?? Comparer<T>.Default;
+        public MySortedSetExperemental(IComparer<T> comparer) => this.comparer = comparer ?? Comparer<T>.Default;
 
-        public MySortedSet(IEnumerable<T> collection) : this(collection, Comparer<T>.Default) { }
+        public MySortedSetExperemental(IEnumerable<T> collection) : this(collection, Comparer<T>.Default) { }
 
-        public MySortedSet(IEnumerable<T> collection, IComparer<T> comparer) : this(comparer)
+        public MySortedSetExperemental(IEnumerable<T> collection, IComparer<T> comparer) : this(comparer)
         {
             if (collection != null)
             {
@@ -29,22 +29,10 @@ namespace _12
 
         IEnumerator<T> IEnumerable<T>.GetEnumerator()
         {
-            Stack<Node> stack = new();
-            Node current = root!;
-
-            while (current != null || stack.Count > 0)
+            foreach (var node in GetNodesAscending())
             {
-                while (current != null)
-                {
-                    stack.Push(current);
-                    current = current.Left!;
-                }
-
-                current = stack.Pop();
-                yield return current.Value;
-                current = current.Right!;
+                yield return node.Value!;
             }
-
             yield break;
         }
 
@@ -53,7 +41,7 @@ namespace _12
         #endregion
 
         #region ICollection<T> members
-        public int Count {get; private set;}
+        public int Count { get; private set; }
 
         public bool IsReadOnly => false;
 
@@ -61,18 +49,23 @@ namespace _12
         {
             ArgumentNullException.ThrowIfNull(value, nameof(value));
 
-            if (root == null)
+            if (NullOrDefault(root))
             {
-                root = new Node(value);
+                if (root == null) root = new Node(value);
+                else
+                {
+                    root.Value = value;
+                    root.IsInitialized = true;
+                }
                 Count = 1;
             }
-            else AddIfNotPresent(root, value);
+            else AddIfNotPresent(root!, value);
         }
 
         public bool Remove(T value)
         {
             Node node = FindNode(value)!;
-            if (node == null) return false;
+            if (NullOrDefault(node)) return false;
 
             if (--Count == 0) root = null;
             else RemoveNode(node);
@@ -81,11 +74,16 @@ namespace _12
 
         public void Clear()
         {
-            root = null;
+            foreach (var node in GetNodesAscending())
+            {
+                node.Value = default!;
+                node.IsInitialized = false;
+            }
+
             Count = 0;
         }
 
-        public bool Contains(T value) => FindNode(value) != null;
+        public bool Contains(T value) => !NullOrDefault(FindNode(value));
 
         public void CopyTo(T[] array) => CopyTo(array, 0, Count);
 
@@ -117,16 +115,24 @@ namespace _12
             }
 
             var next = order < 0 ? current.Left : current.Right;
-            if (next == null)
+            if (NullOrDefault(next))
             {
-                next = new Node(value) { Parent = current };
-                if (order < 0) current.Left = next;
-                else current.Right = next;
+                if (next == null)
+                {
+                    next = new Node(value) { Parent = current };
+                    if (order < 0) current.Left = next;
+                    else current.Right = next;
+                }
+                else
+                {
+                    next.Value = value;
+                    next.IsInitialized = true;
+                }
                 Count++;
                 PerformBalance(current);
                 return true;
             }
-            if (AddIfNotPresent(next, value))
+            if (AddIfNotPresent(next!, value))
             {
                 PerformBalance(current);
                 return true;
@@ -139,7 +145,7 @@ namespace _12
             if (node.Left == null || node.Right == null)
             {
                 var next = node.Left ?? node.Right;
-                if (next != null) next!.Parent = node.Parent;
+                if (next != null) next.Parent = node.Parent;
                 if (node.Parent != null)
                 {
                     if (comparer.Compare(node.Value, node.Parent.Value) <= 0)
@@ -151,12 +157,22 @@ namespace _12
             }
             else
             {
-                var maxLeftNode = node.Left;
-                while (maxLeftNode.Right != null)
-                    maxLeftNode = maxLeftNode.Right;
-
-                node.Value = maxLeftNode.Value;
-                RemoveNode(maxLeftNode);
+                Node? relevantNode;
+                if (NullOrDefault(node.Left) && NullOrDefault(node.Right)
+                    || !NullOrDefault(node.Left))
+                {
+                    relevantNode = node.Left;
+                    while (!NullOrDefault(relevantNode!.Right))
+                        relevantNode = relevantNode.Right;
+                }
+                else
+                {
+                    relevantNode = node.Right;
+                    while (!NullOrDefault(relevantNode!.Left))
+                        relevantNode = relevantNode.Left;
+                }
+                node.Value = relevantNode.Value;
+                RemoveNode(relevantNode);
                 PerformBalance(node);
             }
         }
@@ -206,9 +222,9 @@ namespace _12
             if (value == null) return null;
 
             Node? current = root;
-            while (current != null)
+            while (!NullOrDefault(current))
             {
-                var order = comparer.Compare(value, current.Value);
+                var order = comparer.Compare(value, current!.Value);
                 if (order == 0) break;
 
                 current = order < 0 ? current.Left : current.Right;
@@ -217,15 +233,39 @@ namespace _12
             return current;
         }
 
+        private static bool NullOrDefault(Node? node) =>
+            node == null || !node.IsInitialized;
+
+        private List<Node> GetNodesAscending()
+        {
+            List<Node> nodes = new();
+            Stack<Node> stack = new();
+            Node current = root!;
+            while (!NullOrDefault(current) || stack.Count > 0)
+            {
+                while (!NullOrDefault(current))
+                {
+                    stack.Push(current);
+                    current = current.Left!;
+                }
+
+                current = stack.Pop();
+                nodes.Add(current);
+                current = current.Right!;
+            }
+            
+            return nodes;
+        }
+
         public override bool Equals(object? obj)
         {
-            return obj is MySortedSet<T> set
+            return obj is MySortedSetExperemental<T> set
                 && comparer.Equals(set.comparer)
                 && Count == set.Count
                 && this.SequenceEqual(set);
         }
 
-        public object Clone() => new MySortedSet<T>(this, comparer);
+        public object Clone() => new MySortedSetExperemental<T>(this, comparer);
         #endregion
 
         public sealed class Node(T value)
@@ -238,12 +278,14 @@ namespace _12
 
             public Node? Parent { get; set; }
 
+            public bool IsInitialized { get; set; } = true;
+
             public int Height =>
                 1 + Math.Max(
-                    Left == null ? -1 : Left.Height, Right == null ? -1 : Right.Height);
+                    NullOrDefault(Left) ? -1 : Left!.Height, NullOrDefault(Right) ? -1 : Right!.Height);
 
             public int BalanceRatio =>
-                (Right == null ? -1 : Right.Height) - (Left == null ? -1 : Left.Height);
+                (NullOrDefault(Right) ? -1 : Right!.Height) - (NullOrDefault(Left) ? -1 : Left!.Height);
         }
     }
 }

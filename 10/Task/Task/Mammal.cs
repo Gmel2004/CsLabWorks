@@ -46,9 +46,11 @@ namespace Task
             Subclass = (MammalSubclass)rnd.Next(0, 2);
         }
 
+        public override void Show() => Console.WriteLine(ToString());
+
         public override string ToString()
         {
-            return $"{base.ToString()}\n{Subclass} subclass";//(char)(new Random().Next(0, 256)) + "rrrrr" + (char)(new Random().Next(0, 256));//
+            return $"{base.ToString()}\n{Subclass} subclass";
         }
 
         public override bool Equals(object? obj)
@@ -64,6 +66,15 @@ namespace Task
         public override object Clone()
         {
             return new Mammal(this);
+        }
+        public override int CompareTo(Animal? other)
+        {
+            var order = base.CompareTo(other);
+
+            if (order != 0) return order;
+
+            order = Subclass.CompareTo(((Mammal)other!).Subclass);
+            return order;
         }
     }
 }

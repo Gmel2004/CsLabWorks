@@ -6,11 +6,19 @@ namespace Banchmark
     {
         public static double MeasureTime(Action action)
         {
-            var stopWatch = new Stopwatch();
-            stopWatch.Restart();
-            action();
-            stopWatch.Stop();
-            return stopWatch.Elapsed.TotalSeconds;
+            var sw = new Stopwatch();
+            for (int i = 0; i < 10; i++)
+            {
+                action();
+            }
+            int n = 100;
+            sw.Start();
+            for (int i = 0; i < n; i++)
+            {
+                action();
+            }
+            sw.Stop();
+            return sw.Elapsed.Ticks / n;
         }
     }
 }

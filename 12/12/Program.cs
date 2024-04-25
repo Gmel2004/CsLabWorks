@@ -6,7 +6,6 @@ namespace _12
     {
         static void Main(string[] args)
         {
-            //SortedSet<sbyte>
             List<Animal> animals = new();
 
             CreateAnimals<Bird>(animals);
@@ -16,59 +15,86 @@ namespace _12
             Console.WriteLine("---Проход по List<Animal> animals:---");
             animals.ForEach(t => { t.InitRandom(); Console.WriteLine(t); Console.WriteLine(); });
 
-            MySortedSet<Animal> firstMySortedSetForAnimals = new(animals);
+            MySortedSet<Animal> first = new(animals);
             Console.WriteLine("---Проход по MySortedSet<Animal> firstMySortedSetForAnimals---");
-            Console.WriteLine("(Использование встроенного компоратора - по имени):");
+            Console.WriteLine("(Использование встроенного компоратора - по типу и полям):");
 
-            foreach (var item in firstMySortedSetForAnimals)
+            foreach (var item in first)
             {
                 Console.WriteLine(item);
                 Console.WriteLine();
             }
 
-            MySortedSet<Animal> secondMySortedSetForAnimals = new(animals, new AnimalWeightComparer());
+            MySortedSet<Animal> second = new(animals, new AnimalNameComparer());
             Console.WriteLine("---Проход по MySortedSet<Animal> secondMySortedSetForAnimals---");
-            Console.WriteLine("(Использование внешнего компоратора - по весу):");
+            Console.WriteLine("(Использование внешнего компоратора - по имени):");
 
-            foreach (var item in secondMySortedSetForAnimals)
+            foreach (var item in second)
             {
                 Console.WriteLine(item);
                 Console.WriteLine();
             }
 
-            Console.WriteLine("---Проверка поиска---");
+            Console.WriteLine("---Проверка содеражания---");
+            Console.WriteLine("Животное:");
+            Console.WriteLine(animals[animals.Count / 2].ToString());
             Console.WriteLine("1) firstMySortedSetForAnimals");
-            var node = firstMySortedSetForAnimals.FindNode(animals[2]);
-            Console.WriteLine("Значение:");
-            Console.WriteLine(node!.Value);
+            Console.WriteLine($"Содержит:" +
+                $"{first.Contains(animals[animals.Count / 2])}");
             Console.WriteLine();
 
             Console.WriteLine("2) secondMySortedSetForAnimals");
-            node = secondMySortedSetForAnimals.FindNode(animals[2]);
-            Console.WriteLine("Значение:");
-            Console.WriteLine(node!.Value);
+            Console.WriteLine($"Содержит:" +
+                $"{second.Contains(animals[animals.Count / 2])}");
             Console.WriteLine();
 
             Console.WriteLine("---Проверка удаления---");
             Console.WriteLine("1) firstMySortedSetForAnimals");
-            firstMySortedSetForAnimals.Remove(animals[2]);
+            Console.WriteLine("Животное:");
+            Console.WriteLine(animals[animals.Count / 2].ToString());
+            first.Remove(animals[animals.Count / 2]);
             Console.WriteLine("---Проход:---");
 
-            foreach (var item in firstMySortedSetForAnimals)
+            foreach (var item in first)
             {
                 Console.WriteLine(item);
                 Console.WriteLine();
             }
 
             Console.WriteLine("2) secondMySortedSetForAnimals");
-            secondMySortedSetForAnimals.Remove(animals[2]);
+            second.Remove(animals[animals.Count / 2]);
             Console.WriteLine("---Проход:---");
 
-            foreach (var item in secondMySortedSetForAnimals)
+            foreach (var item in second)
             {
                 Console.WriteLine(item);
                 Console.WriteLine();
             }
+
+            Console.WriteLine("---Проверка содеражания---");
+            Console.WriteLine("Животное:");
+            Console.WriteLine(animals[animals.Count / 2].ToString());
+            Console.WriteLine("1) firstMySortedSetForAnimals");
+            Console.WriteLine($"Содержит:" +
+                $"{first.Contains(animals[animals.Count / 2])}");
+            Console.WriteLine();
+
+            Console.WriteLine("2) secondMySortedSetForAnimals");
+            Console.WriteLine($"Содержит:" +
+                $"{second.Contains(animals[animals.Count / 2])}");
+            Console.WriteLine();
+
+            Console.WriteLine("---Проверка копирования---");
+            var bird = new Bird();
+            bird.InitRandom();
+            Console.WriteLine("Глубокое:");
+            second = (MySortedSet<Animal>)first.Clone();
+            first.Add(bird);
+            Console.WriteLine($"""
+                first.Count: {first.Count}
+                second.Count: {second.Count}
+                """);
+            Console.WriteLine();
         }
 
         private static void CreateAnimals<T>(List<Animal> animals) where T : Animal, new()
