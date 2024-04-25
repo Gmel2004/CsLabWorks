@@ -3,7 +3,7 @@
 namespace _12
 {
     public class MySortedSetExperemental<T> :
-        ICollection<T>
+        ICollection<T>, ICloneable
     {
         private Node? root;
         private int count;
@@ -216,7 +216,7 @@ namespace _12
                 next.Right = node;
                 node.Left = temp;
             }
-            if (temp != null) temp!.Parent = node;
+            if (temp != null) temp.Parent = node;
         }
 
         private Node? FindNode(T value)
@@ -269,7 +269,7 @@ namespace _12
 
         public object Clone() => new MySortedSetExperemental<T>(this, comparer);
 
-        public object ShallowCopy() => MemberwiseClone();
+        public object ShallowCopy() => this;// MemberwiseClone();
         #endregion
 
         public sealed class Node(T value)

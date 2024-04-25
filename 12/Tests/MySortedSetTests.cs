@@ -2,104 +2,97 @@ using _12;
 
 namespace Tests
 {
-    [TestFixture]
-    public class MySortedSetTests
+    [TestFixture(typeof(MySortedSet<int>))]
+    [TestFixture(typeof(MySortedSetExperemental<int>))]
+    public class MySortedSetTests<TCollection> where TCollection : ICollection<int>, ICloneable, new()
     {
-        public static IEnumerable<object> Sets
+        private const int elementsCount = 10000;
+        private static ICollection<int> set;
+
+        [SetUp]
+        public void SetUp()
         {
-            get
+            if (set is not null && set.Count == elementsCount) return;
+
+            set = new TCollection();
+            for (var i = 0; i < 10000; i++)
             {
-                MySortedSet<int> first = new();
-                MySortedSetExperemental<int> second = new();
-                for (var i = 0; i < 100000; i++)
-                {
-                    first.Add(i);
-                    second.Add(i);
-                }
-                first.Clear();
-                second.Clear();
-                for (var i = 0; i < 1000; i++)
-                {
-                    first.Add(i);
-                    second.Add(i);
-                }
-                return [first, second];
+                set.Add(i);
+            }
+            set.Clear();
+            for (var i = 0; i < elementsCount; i++)
+            {
+                set.Add(i);
             }
         }
 
-        [TestCaseSource(nameof(Sets))]
-        public void Add(ICollection<int> set)
+        [Test]
+        public void Add()
         {
             for (var i = 0; i < 1000; i++) set.Add(i);
-            Assert.That(set, Is.EquivalentTo(Enumerable.Range(0, 1000)));
+            Assert.That(set, Is.EquivalentTo(Enumerable.Range(0, elementsCount)));
         }
 
-        [TestCaseSource(nameof(Sets))]
-        public void Contains(ICollection<int> set)
+        [Test]
+        public void Contains()
         {
             Assert.That(set.Contains(100001), Is.False);
         }
 
-        [TestCaseSource(nameof(Sets))]
-        public void Remove(ICollection<int> set)
+        [Test]
+        public void Remove()
         {
             Assert.That(set.Remove(77), Is.True);
         }
 
-        [TestCaseSource(nameof(Sets))]
-        public void CopyTo(ICollection<int> set)
+        [Test]
+        public void CopyTo()
         {
             int[] array = new int[500000];
             set.CopyTo(array, 5000);
             Assert.That(array, Is.EquivalentTo(Enumerable.Repeat(0, 5000)
-                .Concat(Enumerable.Range(0, 1000))
-                .Concat(Enumerable.Repeat(0, 500000 - 1000 - 5000))));
+                .Concat(Enumerable.Range(0, elementsCount))
+                .Concat(Enumerable.Repeat(0, 500000 - elementsCount - 5000))));
         }
 
-        [TestCaseSource(nameof(Sets))]
-        public void CheckCount(ICollection<int> set)
+        [Test]
+        public void CheckCount()
         {
-            Assert.That(set, Has.Count.EqualTo(1000));
+            Assert.That(set, Has.Count.EqualTo(elementsCount));
         }
 
-        [TestCaseSource(nameof(Sets))]
-        public void Equals(ICollection<int> set)
+        [Test]
+        public void Clone()
         {
-            if (set is MySortedSet<int>)
-            {
-                var first = (MySortedSet<int>)set;
-                var second = (MySortedSet<int>)first.Clone();
-                first.Remove(77);
-                second.Remove(77);
-                Assert.That(first, Is.EqualTo(second));
-            }
-            else
-            {
-                var first = (MySortedSetExperemental<int>)set;
-                var second = (MySortedSetExperemental<int>)first.Clone();
-                first.Remove(77);
-                second.Remove(77);
-                Assert.That(first, Is.EqualTo(second));
-            }
+            var duplicate = GetDuplicate(set, false);
+            set.Remove(77);
+            Assert.That(set, Is.Not.EqualTo(duplicate));
         }
 
-        [TestCaseSource(nameof(Sets))]
-        public void ShallowCopy(ICollection<int> set)
+        [Test]
+        public void Equals()
         {
-            if (set is MySortedSet<int>)
-            {
-                var first = (MySortedSet<int>)set;
-                var second = (MySortedSet<int>)first.ShallowCopy();
-                first.Remove(77);
-                Assert.That(first, Is.EqualTo(second));
-            }
-            else
-            {
-                var first = (MySortedSetExperemental<int>)set;
-                var second = (MySortedSetExperemental<int>)first.ShallowCopy();
-                first.Remove(77);
-                Assert.That(first, Is.EqualTo(second));
-            }
+            var duplicate = (ICollection<int>)((ICloneable)set).Clone();
+            set.Remove(77);
+            duplicate.Remove(77);
+            Assert.That(set, Is.EqualTo(duplicate));
         }
+
+        [Test]
+        public void ShallowCopy()
+        {
+            var duplicate = GetDuplicate(set, true);
+            set.Remove(77);
+            Assert.That(set, Is.EqualTo(duplicate));
+        }
+
+        private ICollection<int> GetDuplicate(ICollection<int> set, bool isShallowCopy) => set switch
+        {
+            MySortedSet<int> mySet
+                => (ICollection<int>)(isShallowCopy ? mySet.ShallowCopy() : mySet.Clone()),
+            MySortedSetExperemental<int> mySetExperemental
+                => (ICollection<int>)(isShallowCopy ? mySetExperemental.ShallowCopy() : mySetExperemental.Clone()),
+            _ => throw new NotImplementedException()
+        };
     }
 }

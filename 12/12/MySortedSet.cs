@@ -3,7 +3,7 @@
 namespace _12
 {
     public class MySortedSet<T> :
-        ICollection<T>
+        ICollection<T>, ICloneable
     {
         private Node? root;
         private int count;
@@ -229,7 +229,7 @@ namespace _12
 
         public object Clone() => new MySortedSet<T>(this, comparer);
 
-        public object ShallowCopy() => MemberwiseClone();
+        public object ShallowCopy() => this;// MemberwiseClone();
         #endregion
 
         public sealed class Node(T value)

@@ -96,7 +96,7 @@ namespace _12
                 """);
             Console.WriteLine();
             Console.WriteLine("2) Поверхностное:");
-            first = (MySortedSet<Animal>)second.ShallowCopy();
+            second = (MySortedSet<Animal>)first.ShallowCopy();
             first.Remove(bird);
             Console.WriteLine($"""
                 first.Count: {first.Count}
