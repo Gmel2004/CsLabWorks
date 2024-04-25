@@ -8,4 +8,13 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Reference Include="12">
+      <HintPath>..\..\12\12\bin\Debug\net8.0\12.dll</HintPath>
+    </Reference>
+    <Reference Include="Task">
+      <HintPath>..\..\12\12\bin\Debug\net8.0\Task.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>
