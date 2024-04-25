@@ -6,7 +6,6 @@ namespace _12
         ICollection<T>, ICloneable
     {
         private Node? root;
-        private int count;
 
         private readonly IComparer<T> comparer;
 
@@ -42,7 +41,7 @@ namespace _12
         #endregion
 
         #region ICollection<T> members
-        public int Count => count;
+        public int Count { get; private set; }
 
         public bool IsReadOnly => false;
 
@@ -58,7 +57,7 @@ namespace _12
                     root.Value = value;
                     root.IsInitialized = true;
                 }
-                count = 1;
+                Count = 1;
             }
             else AddIfNotPresent(root!, value);
         }
@@ -68,8 +67,7 @@ namespace _12
             Node node = FindNode(value)!;
             if (NullOrDefault(node)) return false;
 
-            count--;
-            if (count == 0) root = null;
+            if (--Count == 0) root = null;
             else RemoveNode(node);
             return true;
         }
@@ -82,7 +80,7 @@ namespace _12
                 node.IsInitialized = false;
             }
 
-            count = 0;
+            Count = 0;
         }
 
         public bool Contains(T value) => !NullOrDefault(FindNode(value));
@@ -130,7 +128,7 @@ namespace _12
                     next.Value = value;
                     next.IsInitialized = true;
                 }
-                count++;
+                Count++;
                 PerformBalance(current);
                 return true;
             }
@@ -268,8 +266,6 @@ namespace _12
         }
 
         public object Clone() => new MySortedSetExperemental<T>(this, comparer);
-
-        public object ShallowCopy() => this;// MemberwiseClone();
         #endregion
 
         public sealed class Node(T value)

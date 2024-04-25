@@ -87,17 +87,9 @@ namespace _12
             Console.WriteLine("---Проверка копирования---");
             var bird = new Bird();
             bird.InitRandom();
-            Console.WriteLine("1) Глубокое:");
+            Console.WriteLine("Глубокое:");
             second = (MySortedSet<Animal>)first.Clone();
             first.Add(bird);
-            Console.WriteLine($"""
-                first.Count: {first.Count}
-                second.Count: {second.Count}
-                """);
-            Console.WriteLine();
-            Console.WriteLine("2) Поверхностное:");
-            second = (MySortedSet<Animal>)first.ShallowCopy();
-            first.Remove(bird);
             Console.WriteLine($"""
                 first.Count: {first.Count}
                 second.Count: {second.Count}

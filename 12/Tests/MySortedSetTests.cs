@@ -4,17 +4,17 @@ namespace Tests
 {
     [TestFixture(typeof(MySortedSet<int>))]
     [TestFixture(typeof(MySortedSetExperemental<int>))]
-    public class MySortedSetTests<TCollection> where TCollection : ICollection<int>, ICloneable, new()
+    public class MySortedSetTests<T> where T : ICollection<int>, ICloneable, new()
     {
         private const int elementsCount = 10000;
-        private static ICollection<int> set;
+        private static T set;
 
         [SetUp]
         public void SetUp()
         {
             if (set is not null && set.Count == elementsCount) return;
 
-            set = new TCollection();
+            set = new T();
             for (var i = 0; i < 10000; i++)
             {
                 set.Add(i);
@@ -64,7 +64,7 @@ namespace Tests
         [Test]
         public void Clone()
         {
-            var duplicate = GetDuplicate(set, false);
+            var duplicate = set.Clone();
             set.Remove(77);
             Assert.That(set, Is.Not.EqualTo(duplicate));
         }
@@ -77,22 +77,5 @@ namespace Tests
             duplicate.Remove(77);
             Assert.That(set, Is.EqualTo(duplicate));
         }
-
-        [Test]
-        public void ShallowCopy()
-        {
-            var duplicate = GetDuplicate(set, true);
-            set.Remove(77);
-            Assert.That(set, Is.EqualTo(duplicate));
-        }
-
-        private ICollection<int> GetDuplicate(ICollection<int> set, bool isShallowCopy) => set switch
-        {
-            MySortedSet<int> mySet
-                => (ICollection<int>)(isShallowCopy ? mySet.ShallowCopy() : mySet.Clone()),
-            MySortedSetExperemental<int> mySetExperemental
-                => (ICollection<int>)(isShallowCopy ? mySetExperemental.ShallowCopy() : mySetExperemental.Clone()),
-            _ => throw new NotImplementedException()
-        };
     }
 }
