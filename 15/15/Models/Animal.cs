@@ -10,6 +10,7 @@ public abstract class Animal : INotifyPropertyChanged
     private double _y;
     private int _speed;
     protected SoundPlayer SoundPlayer;
+    private static Random rand = new Random();
 
     public double X
     {
@@ -43,7 +44,6 @@ public abstract class Animal : INotifyPropertyChanged
     {
         await Task.Run(() =>
         {
-            Random rand = new Random();
             Speed = rand.Next(0, 2) == 0 ? WalkSpeed : RunSpeed; // Randomly choose between walk and run speed
             X += rand.Next(-5, 6);
             Y += rand.Next(-5, 6);

@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:_15"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="700" Width="900">
 
     <Window.Resources>
         <Style x:Key="AnimalStyle" TargetType="Image">
@@ -18,7 +18,9 @@
         <ItemsControl ItemsSource="{Binding Sheeps}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <Image Style="{StaticResource AnimalStyle}" Source="C:\Users\Gleb\Desktop\Programming\Study\CsLabWorks\15\15\Images\sheep.png" Canvas.Left="{Binding Path=X}" Canvas.Top="{Binding Path=Y}"/>
+                    <Canvas>
+                        <Image Style="{StaticResource AnimalStyle}" Source="Images\sheep.png" Canvas.Left="{Binding X}" Canvas.Top="{Binding Y}"/>
+                    </Canvas>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
@@ -27,12 +29,13 @@
         <ItemsControl ItemsSource="{Binding Wolves}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <Image Style="{StaticResource AnimalStyle}" Source="C:\Users\Gleb\Desktop\Programming\Study\CsLabWorks\15\15\Images\wolf.png" Canvas.Left="{Binding Path=X}" Canvas.Top="{Binding Path=Y}"/>
+                    <Canvas>
+                        <Image Style="{StaticResource AnimalStyle}" Source="Images\wolf.png" Canvas.Left="{Binding X}" Canvas.Top="{Binding Y}"/>
+                    </Canvas>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
-
         <!-- Собака -->
-        <Image Style="{StaticResource AnimalStyle}" Source="C:\Users\Gleb\Desktop\Programming\Study\CsLabWorks\15\15\Images\dog.png" Canvas.Left="{Binding Path=X}" Canvas.Top="{Binding Path=Y}" DataContext="{Binding Dog}"/>
+        <Image Style="{StaticResource AnimalStyle}" Source="Images\dog.png" Canvas.Left="{Binding X}" Canvas.Top="{Binding Y}" DataContext="{Binding Dog}"/>
     </Canvas>
 </Window>
