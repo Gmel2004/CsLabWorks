@@ -100,10 +100,7 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Resources\Assets\" />
-    <Folder Include="Resources\Music\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Resource Include="Images\dog.png" />
     <Resource Include="Images\sheep.png" />
@@ -111,14 +108,6 @@
     <Resource Include="Images\Новая папка\dog.png" />
     <Resource Include="Images\Новая папка\sheep.png" />
     <Resource Include="Images\Новая папка\wolf.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Sounds\dog.mp3" />
-    <Content Include="Sounds\dog.wav" />
-    <Content Include="Sounds\sheep.mp3" />
-    <Content Include="Sounds\sheep.wav" />
-    <Content Include="Sounds\wolf.mp3" />
-    <Content Include="Sounds\wolf.wav" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
