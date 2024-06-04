@@ -49,17 +49,17 @@ public class Game
         var tasks = Sheeps.Select(async sheep =>
         {
             await sheep.MoveAsync();
-            await Task.Delay(sheep.Speed); // Wait for the speed delay
+            await Task.Delay(50); // Wait for the speed delay
         })
                           .Concat(Wolves.Select(async wolf =>
                           {
                               await wolf.MoveAsync();
-                              await Task.Delay(wolf.Speed); // Wait for the speed delay
+                              await Task.Delay(50); // Wait for the speed delay
                           }))
                           .Concat(new Task[] {
                               Dog.MoveAsync().ContinueWith(async _ =>
                               {
-                                  await Task.Delay(Dog.Speed); // Wait for the speed delay
+                                  await Task.Delay(50); // Wait for the speed delay
                               })
                           });
 

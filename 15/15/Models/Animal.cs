@@ -45,10 +45,10 @@ public abstract class Animal : INotifyPropertyChanged
         await Task.Run(() =>
         {
             Speed = rand.Next(0, 2) == 0 ? WalkSpeed : RunSpeed; // Randomly choose between walk and run speed
-            X += rand.Next(-5, 6);
-            Y += rand.Next(-5, 6);
-            PlaySound();
-        });
+            X = Math.Min(Math.Max(X + rand.Next(-5, 6), 0), 800);
+            Y = Math.Min(Math.Max(Y + rand.Next(-5, 6), 0), 600);
+			//PlaySound();
+		});
     }
 
     protected abstract void PlaySound();
