@@ -3,35 +3,23 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Shapes;
 
 public class Game
 {
+    private const int millisecondsDelay = 50;
     public ObservableCollection<Sheep> Sheeps { get; }
     public ObservableCollection<Wolf> Wolves { get; }
     public Dog Dog { get; }
 
-    private Random _random = new Random();
+    private Random rnd = new Random();
 
     public Game()
     {
-        int sheepCount = _random.Next(2, 6);
-        int wolfCount = _random.Next(1, 4);
-
-        Sheeps = new ObservableCollection<Sheep>();
-        Wolves = new ObservableCollection<Wolf>();
-
-        for (int i = 0; i < sheepCount; i++)
-        {
-            Sheeps.Add(new Sheep { X = _random.Next(0, 800), Y = _random.Next(0, 600) });
-        }
-
-        for (int i = 0; i < wolfCount; i++)
-        {
-            Wolves.Add(new Wolf { X = _random.Next(0, 800), Y = _random.Next(0, 600) });
-        }
-
-        Dog = new Dog { X = _random.Next(0, 800), Y = _random.Next(0, 600) };
+        Sheeps = new ObservableCollection<Sheep>(
+            Enumerable.Range(0, rnd.Next(2, 6)).Select(t => new Sheep()));
+        Wolves = new ObservableCollection<Wolf>(
+            Enumerable.Range(0, rnd.Next(1, 4)).Select(t => new Wolf()));
+        Dog = new Dog();
     }
 
     public async Task GameLoop()
@@ -49,17 +37,17 @@ public class Game
         var tasks = Sheeps.Select(async sheep =>
         {
             await sheep.MoveAsync();
-            await Task.Delay(50); // Wait for the speed delay
+            await Task.Delay(millisecondsDelay);
         })
                           .Concat(Wolves.Select(async wolf =>
                           {
                               await wolf.MoveAsync();
-                              await Task.Delay(50); // Wait for the speed delay
+                              await Task.Delay(millisecondsDelay);
                           }))
                           .Concat(new Task[] {
                               Dog.MoveAsync().ContinueWith(async _ =>
                               {
-                                  await Task.Delay(50); // Wait for the speed delay
+                                  await Task.Delay(millisecondsDelay);
                               })
                           });
 
@@ -68,14 +56,14 @@ public class Game
 
     private async Task CheckCollisionsAsync()
     {
-        await Task.Run(() => 
+        await Task.Run(() =>
         {
             var animals = Sheeps.Cast<Animal>().Concat(Wolves).Concat(new[] { Dog }).ToList();
             for (int i = 0; i < animals.Count; i++)
             {
                 for (int j = i + 1; j < animals.Count; j++)
                 {
-                    if (IsColliding(animals[i], animals[j]))
+                    if (animals[i].IsCollidingTo(animals[j]))
                     {
                         HandleCollision(animals[i], animals[j]);
                     }
@@ -84,18 +72,13 @@ public class Game
         });
     }
 
-    private bool IsColliding(Animal animal1, Animal animal2)
-    {
-        return Math.Abs(animal1.X - animal2.X) < 50 && Math.Abs(animal1.Y - animal2.Y) < 50;
-    }
-
     private void HandleCollision(Animal animal1, Animal animal2)
     {
         Application.Current.Dispatcher.Invoke(() =>
         {
             if (animal1 is Sheep && animal2 is Sheep)
             {
-                Sheeps.Add(new Sheep { X = _random.Next(0, 800), Y = _random.Next(0, 600) });
+                Sheeps.Add(new Sheep());
             }
             else if (animal1 is Sheep && animal2 is Wolf || animal1 is Wolf && animal2 is Sheep)
             {
@@ -109,7 +92,7 @@ public class Game
             }
             else if (animal1 is Wolf && animal2 is Wolf)
             {
-                Wolves.Add(new Wolf { X = _random.Next(0, 800), Y = _random.Next(0, 600) });
+                Wolves.Add(new Wolf());
             }
         });
     }

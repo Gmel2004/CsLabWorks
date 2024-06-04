@@ -1,39 +1,42 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Media;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 public abstract class Animal : INotifyPropertyChanged
 {
-    private double _x;
-    private double _y;
-    private int _speed;
-    protected SoundPlayer SoundPlayer;
-    private static Random rand = new Random();
+    private double x;
+    private double y;
+
+    private static Random rnd = new Random();
 
     public double X
     {
-        get => _x;
-        set { _x = value; OnPropertyChanged(); }
+        get => x;
+        set
+        {
+            x = Math.Min(Math.Max(value, 0), 800);
+            OnPropertyChanged();
+        }
     }
 
     public double Y
     {
-        get => _y;
-        set { _y = value; OnPropertyChanged(); }
+        get => y;
+        set
+        {
+            y = Math.Min(Math.Max(value, 0), 600);
+            OnPropertyChanged();
+        }
     }
-
-    public int Speed
-    {
-        get => _speed;
-        set { _speed = value; OnPropertyChanged(); }
-    }
-
-    public int WalkSpeed { get; set; }
-    public int RunSpeed { get; set; }
 
     public event PropertyChangedEventHandler PropertyChanged;
+
+    public Animal()
+    {
+        X = rnd.Next(0, 800);
+        Y = rnd.Next(0, 600);
+    }
 
     protected void OnPropertyChanged([CallerMemberName] string name = null)
     {
@@ -44,12 +47,11 @@ public abstract class Animal : INotifyPropertyChanged
     {
         await Task.Run(() =>
         {
-            Speed = rand.Next(0, 2) == 0 ? WalkSpeed : RunSpeed; // Randomly choose between walk and run speed
-            X = Math.Min(Math.Max(X + rand.Next(-5, 6), 0), 800);
-            Y = Math.Min(Math.Max(Y + rand.Next(-5, 6), 0), 600);
-			//PlaySound();
-		});
+            X += rnd.Next(-5, 6);
+            Y += rnd.Next(-5, 6);
+        });
     }
 
-    protected abstract void PlaySound();
+    public bool IsCollidingTo(Animal animal) =>
+        Math.Abs(X - animal.X) < 50 && Math.Abs(Y - animal.Y) < 50;
 }

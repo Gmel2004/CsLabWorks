@@ -7,17 +7,17 @@ using System.Windows;
 
 public class ViewModel
 {
-    private Game _game;
+    private Game game;
 
-    public ObservableCollection<Sheep> Sheeps => _game.Sheeps;
-    public ObservableCollection<Wolf> Wolves => _game.Wolves;
-    public Dog Dog => _game.Dog;
+    public ObservableCollection<Sheep> Sheeps => game.Sheeps;
+    public ObservableCollection<Wolf> Wolves => game.Wolves;
+    public Dog Dog => game.Dog;
     public event PropertyChangedEventHandler PropertyChanged;
 
     public ViewModel()
     {
-        _game = new Game();
-        Task.Run(_game.GameLoop);
+        game = new Game();
+        Task.Run(game.GameLoop);
     }
 
     protected void OnPropertyChanged(string propertyName)
